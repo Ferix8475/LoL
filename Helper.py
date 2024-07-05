@@ -1,6 +1,29 @@
 import requests
 import time
 import json
+import logging
+
+def handle_rate_limit(resp):
+    """
+
+    Handles the case in which the Rate Limit (100/2mins, 20/1s) is Exceeded, sleeps the program if the limit is exceeded.
+
+    @Parameters:
+        resp (Response): Response from Request made.
+    
+    @Returns:
+        Return True if the rate limit was exceeded and the program was slept, false otherwise.
+
+    """
+    if resp.status_code == 429:
+        retry_after = int(resp.headers.get('Retry-After', 10))
+        logging.warning(f"Rate limit hit. Retrying after {retry_after} seconds.")
+        time.sleep(retry_after)
+        return True
+    return False
+
+
+
 
 def fetch_account_puuid(gameName: str, tagLine: str, api_key: str, region = "americas") -> dict:
     """
@@ -13,7 +36,7 @@ def fetch_account_puuid(gameName: str, tagLine: str, api_key: str, region = "ame
         region (str): The region for which we are looking for the player with the corresponding RiotID.
 
     @Return:
-        str: The Corresponding User's PUUID.
+        str: The Corresponding User's PUUID. Returns -1 if Rate Limit exceeded
 
     """
 
@@ -23,12 +46,15 @@ def fetch_account_puuid(gameName: str, tagLine: str, api_key: str, region = "ame
         'X-Riot-Token': api_key
     }
 
-    resp = requests.get(url, headers = headers)
-    
-    if resp.status_code == 200:
-        return resp.json()["puuid"]
-    else:
-        raise ValueError(f'Error: {resp.status_code}, {resp.json()["status"]["message"]}')
+    while True:
+        resp = requests.get(url, headers = headers)
+        
+        if resp.status_code == 200:
+            return resp.json()["puuid"]
+        elif handle_rate_limit(resp):
+            continue
+        else:
+            raise ValueError(f'Error: {resp.status_code}, {resp.json()["status"]["message"]}')
 
 
 
@@ -47,7 +73,7 @@ def fetch_match_batch(puuid: str, start: int, count: int, api_key: str, startTim
         region (str): The region to fetch matches from.
     
     @Returns:
-        list: A list of match IDs.    
+        list: A list of match IDs. Returns -1 if rate limit exceeded
 
     """
     url = f"https://{region}.api.riotgames.com/lol/match/v5/matches/by-puuid/{puuid}/ids"
@@ -65,17 +91,20 @@ def fetch_match_batch(puuid: str, start: int, count: int, api_key: str, startTim
     if startTime:
         parameters["startTime"] = startTime
 
-    resp = requests.get(url, headers= headers, params= parameters)
+    while True:
+        resp = requests.get(url, headers= headers, params= parameters)
 
-    if resp.status_code == 200:
-        return resp.json()
-    else:
-        raise ValueError(f'Error: {resp.status_code}, {resp.json()["status"]["message"]}')
+        if resp.status_code == 200:
+            return resp.json()
+        elif handle_rate_limit(resp):
+            continue
+        else:
+            raise ValueError(f'Error: {resp.status_code}, {resp.json()["status"]["message"]}')
 
 
 
 
-def fetch_all_matches(puuid: str, api_key:str, region = "americas", batch_size = 100, startTime = None, delay = 1.2) -> list:
+def fetch_all_matches(puuid: str, api_key:str, region = "americas", batch_size = 100, startTime = None) -> list:
     """
 
     Fetches all match IDs for a given PUUID.
@@ -97,7 +126,8 @@ def fetch_all_matches(puuid: str, api_key:str, region = "americas", batch_size =
     res_matches = []
 
     while True:
-        matches = fetch_match_batch(puuid = puuid, start = start_idx, count = batch_size, api_key = api_key, startTime = startTime)
+        matches = fetch_match_batch(puuid = puuid, start = start_idx, count = batch_size, api_key = api_key, startTime = startTime, region = region)
+        
         if not matches:
             break
         res_matches.extend(matches)
@@ -106,14 +136,13 @@ def fetch_all_matches(puuid: str, api_key:str, region = "americas", batch_size =
         if len(matches) < batch_size:
             break
             
-        time.sleep(delay)
 
     return res_matches
 
 
 
 
-def matches_to_json(matchlist: list[str], api_key: str, filename = "matches.json", region = "americas") -> None:
+def matches_to_json(matchlist: list[str], api_key: str, filename = "matches.json", region = "americas", update_ind = 0) -> None:
     """
 
     Stores matchlist into a json file as a dictionary under key 'matchlist', and the timestamp of the most recent match in 'latest'
@@ -137,24 +166,28 @@ def matches_to_json(matchlist: list[str], api_key: str, filename = "matches.json
 
     url = f"https://{region}.api.riotgames.com/lol/match/v5/matches/{most_recent}"
     
-    resp = requests.get(url, headers=headers)
+    while True:
+        resp = requests.get(url, headers=headers)
 
-    if resp.status_code == 200:
-        latest_match = resp.json()
-    else:
-        raise ValueError(f'Error: {resp.status_code}, {resp.json()['status']['message']}')
+        if resp.status_code == 200:
+            latest_match = resp.json()
+            break
+        elif handle_rate_limit(resp):
+            continue
+        else:
+            raise ValueError(f'Error: {resp.status_code}, {resp.json()['status']['message']}')
         
-    timestamp = latest_match['info']['gameCreation']
+    timestamp = latest_match['info']['gameCreation'] // 1000 # Calculate the timestamp of the start of the most recent game
 
     res_dict = {
+        "last_update": update_ind,
         'latest': timestamp,
         'matchlist': matchlist
     } 
 
-    to_json = json.dumps(res_dict, indent = 4)
     
     with open(filename, "w") as json_file:
-        json_file.write(to_json)
+        json.dump(res_dict, json_file, indent=4)
 
 
 
@@ -162,31 +195,62 @@ def matches_to_json(matchlist: list[str], api_key: str, filename = "matches.json
 def json_to_matches(filename = "matches.json") -> tuple:
     """
 
-    Reads the file and converts it to a list of matches and the timestamp of the latest match
+    Reads the file and converts it to a list of matches and the timestamp of the latest match, plus the index of the last match that has been processed
 
     @Parameters:
         filename (str): The .json file the dictionary of the matchlist is stored in.
          
     @Returns:
-        tuple, a list of all matches and the timestamp of the latest match
+        tuple, a list of all matches, the timestamp of the latest match, and the index of the last processed match
 
     """
 
     with open(filename, 'r') as file:
         data = json.load(file)
     
-    if not data['latest'] or not data['matchlist']:
+    if 'last_update' not in data or 'latest' not in data or 'matchlist' not in data:
         raise ValueError("JSON file not properly formatted.")
 
-    return data['latest'], data['matchlist']
+    return data["last_update"], data['latest'], data['matchlist']
 
 
 
 
+def update_matches(puuid: str, api_key: str, filename = "matches.json") -> None:
+    """
+
+    Fetches and adds the most recent matches to matches.json, updates the matchlist and latest keys
+
+    @Parameters:
+        api_key (str): Riot API key.
+        filename (str): The .json file for the dictionary to be stored in.
+        puuid (str): The puuid of the User
+
+    @Returns:
+        None, Updates filename
+    """
+    last_ind, latest_timestamp, matchlist = json_to_matches(filename)
+
+    new_matches = fetch_all_matches(puuid=puuid, api_key = api_key, startTime = latest_timestamp)[1:]
+    new_matches.extend(matchlist)
+
+    matches_to_json(matchlist = new_matches, api_key = api_key, filename = "matches.json", update_ind = last_ind)
 
 
-def update_matches(puuid: str, startTime: int, start: int, count: int, api_key: str, region = "americas"):
+
+def fetch_match_details(api_key: str, ) -> dict:
     NotImplemented
+
+
+
+
+def process_matches(puuid: str, api_key: str, region  = "americas",  filename = "matches.json", delay = 1.2):
+    
+    last_ind, _, matchlist = json_to_matches(filename)
+
+    
+
+
 
 
 def fetch_match_details(match_id: str, api_key: str, puuid: str, region="americas"):
