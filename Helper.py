@@ -107,7 +107,8 @@ def fetch_match_batch(puuid: str, start: int, count: int, api_key: str, startTim
 def fetch_all_matches(puuid: str, api_key:str, region = "americas", batch_size = 100, startTime = None) -> list:
     """
 
-    Fetches all match IDs for a given PUUID.
+    Fetches all match IDs for a given PUUID. Note: Riot only stores the past 990 matches. Call this method ONLY when fetching the initial batch,
+    see update_matches() to update the list with the most recent matches without deleting the oldest matches.
     
     @Parameters:
         puuid (str): The PUUID of the summoner.
@@ -133,8 +134,8 @@ def fetch_all_matches(puuid: str, api_key:str, region = "americas", batch_size =
         res_matches.extend(matches)
         start_idx += batch_size
 
-        if len(matches) < batch_size:
-            break
+        #if len(matches) < batch_size:
+        #    break
             
 
     return res_matches
@@ -231,37 +232,71 @@ def update_matches(puuid: str, api_key: str, filename = "matches.json") -> None:
     """
     last_ind, latest_timestamp, matchlist = json_to_matches(filename)
 
-    new_matches = fetch_all_matches(puuid=puuid, api_key = api_key, startTime = latest_timestamp)[1:]
+    new_matches = fetch_all_matches(puuid=puuid, api_key = api_key, startTime = latest_timestamp)[:-1]
     new_matches.extend(matchlist)
 
     matches_to_json(matchlist = new_matches, api_key = api_key, filename = "matches.json", update_ind = last_ind)
 
 
 
-def fetch_match_details(api_key: str, ) -> dict:
-    NotImplemented
-
-
-
-
-def process_matches(puuid: str, api_key: str, region  = "americas",  filename = "matches.json", delay = 1.2):
-    
-    last_ind, _, matchlist = json_to_matches(filename)
-
-    
-
-
-
-
-def fetch_match_details(match_id: str, api_key: str, puuid: str, region="americas"):
+def fetch_match_details(match_id: str, api_key: str, region = "americas") -> dict:
     """
     Fetches details of a specific match by match ID.
 
-    Parameters:
+    @Parameters:
         match_id (str): The ID of the match.
         api_key (str): Riot API key.
-        region (str): The region to fetch match details from (default is "americas").
+        region (str): The region to fetch match details from.
 
     Returns:
         dict: Details of the match.
     """
+
+    url = f"https://{region}.api.riotgames.com/lol/match/v5/matches/{match_id}"
+
+    headers = {
+        'X-Riot-Token': api_key
+    }
+
+    while True:
+        resp = requests.get(url, headers=headers)
+
+        if resp.status_code == 200:
+            return resp.json()
+        elif handle_rate_limit(resp):
+            continue
+        else:
+            raise ValueError(f'Error: {resp.status_code}, {resp.json()['status']['message']}')
+
+    
+def fetch_match_timeline(match_id: str, api_key: str, region="americas") -> dict:
+    
+    """
+    Fetches the match timeline match by match ID.
+
+    Parameters:
+        match_id (str): The ID of the match.
+        api_key (str): Riot API key.
+        region (str): The region to fetch match details from.
+
+    @Returns:
+        dict: Details of the match as a timeline.
+    """
+
+    url = f"https://{region}.api.riotgames.com/lol/match/v5/matches/{match_id}/timeline"
+
+    headers = {
+        'X-Riot-Token': api_key
+    }
+
+    while True:
+        resp = requests.get(url, headers=headers)
+
+        if resp.status_code == 200:
+            return resp.json()
+        elif handle_rate_limit(resp):
+            continue
+        else:
+            raise ValueError(f'Error: {resp.status_code}, {resp.json()['status']['message']}')
+
+    
