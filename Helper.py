@@ -317,7 +317,7 @@ def process_match_details(match: json, puuid: str, filterMap = 11) -> DataFrame:
     match_info = match['info']
 
     # Check mapID
-    mapID = match_info['mapId']
+    mapID = match_info.get('mapId')
     if filterMap and filterMap != mapID: 
         return None
 
@@ -325,82 +325,83 @@ def process_match_details(match: json, puuid: str, filterMap = 11) -> DataFrame:
     idx = match['metadata']['participants'].index(puuid) 
 
     # Fetch All Information
-    patch_nums = str(match_info['gameVersion']).split('.')
+    patch_nums = str(match_info.get('gameVersion', '')).split('.')
     patch = ".".join(patch_nums[:2])
 
     # Fetch Dictionaries of General Categories
     player_info = match_info['participants'][idx]
-    challenges = player_info['challenges']
-    perks = player_info['perks']
-    stat_runes = perks['statPerks']
-    primary_runes = perks['styles'][0]
-    secondary_runes = perks['styles'][1]
+    challenges = player_info.get('challenges', {})
+    perks = player_info.get('perks', {})
+    stat_runes = perks.get('statPerks', {})
+    primary_runes = perks.get('styles', [{}])[0]
+    secondary_runes = perks.get('styles', [{}, {}])[1]
 
     # Determine the teamID and which team the player is playing on
-    teamID = player_info['teamId']
-    for t in match_info['teams']:
-        if t['teamId'] == teamID:
+    teamID = player_info.get('teamId')
+    team = None
+    for t in match_info.get('teams', []):
+        if t.get('teamId') == teamID:
             team = t
             break
-    objectives = team['objectives']
 
+    objectives = team.get('objectives', {}) if team else {}
 
     # Fetch Individual Relevant Statistics
 
     # General Information
-    champion = player_info['championName']
-    role = player_info['teamPosition']
-    win = player_info['win']
-    summoner_1 = player_info['summoner1Id']
-    summoner_2 = player_info['summoner2Id']
+    champion = player_info.get('championName')
+    role = player_info.get('teamPosition')
+    win = player_info.get('win')
+    summoner_1 = player_info.get('summoner1Id')
+    summoner_2 = player_info.get('summoner2Id')
 
     # General Statistics/Info
-    turrets_killed = player_info['turretTakedowns']
-    totalMinionsKilled = player_info['totalMinionsKilled']
-    totalJungleKilled = player_info['totalAllyJungleMinionsKilled'] + player_info['totalEnemyJungleMinionsKilled']
-    totalDamage = player_info['totalDamageDealtToChampions']
-    item0 = player_info['item0']
-    item1 = player_info['item1']
-    item2 = player_info['item2']
-    item3 = player_info['item3']
-    item4 = player_info['item4']
-    item5 = player_info['item5']
-    item6 = player_info['item6']
-
+    turrets_killed = player_info.get('turretTakedowns')
+    totalMinionsKilled = player_info.get('totalMinionsKilled')
+    totalJungleKilled = player_info.get('totalAllyJungleMinionsKilled', 0) + player_info.get('totalEnemyJungleMinionsKilled', 0)
+    totalDamage = player_info.get('totalDamageDealtToChampions')
+    item0 = player_info.get('item0')
+    item1 = player_info.get('item1')
+    item2 = player_info.get('item2')
+    item3 = player_info.get('item3')
+    item4 = player_info.get('item4')
+    item5 = player_info.get('item5')
+    item6 = player_info.get('item6')
+    
     # Statistics in Challenges
-    kda = challenges['kda']
-    kill_participation = challenges['killParticipation']
-    damage_share = challenges['teamDamagePercentage']
-    turret_plates = challenges['turretPlatesTaken']
-    gold_pm = challenges['goldPerMinute']
-    damage_pm = challenges['damagePerMinute']
-    takedowns_in_25 = challenges['takedownsFirst25Minutes']
-    vision_score_pm =challenges['visionScorePerMinute']
-    cs_after_10 =  challenges['laneMinionsFirst10Minutes']
-    jungle_after_10 = challenges['jungleCsBefore10Minutes']
-    solos = challenges['soloKills']
-    turrets_killed = challenges['turretTakedowns']
+    kda = challenges.get('kda')
+    kill_participation = challenges.get('killParticipation')
+    damage_share = challenges.get('teamDamagePercentage')
+    turret_plates = challenges.get('turretPlatesTaken')
+    gold_pm = challenges.get('goldPerMinute')
+    damage_pm = challenges.get('damagePerMinute')
+    vision_score_pm = challenges.get('visionScorePerMinute')
+    cs_after_10 = challenges.get('laneMinionsFirst10Minutes')
+    jungle_after_10 = challenges.get('jungleCsBefore10Minutes')
+    solos = challenges.get('soloKills')
 
     # Map Objective Control in River
-    barons = objectives['baron']['kills']
-    dragons = objectives['dragon']['kills']
-    horde = objectives['horde']['kills']
-    heralds = objectives['riftHerald']['kills']
+    barons = objectives.get('baron', {}).get('kills')
+    dragons = objectives.get('dragon', {}).get('kills')
+    horde = objectives.get('horde', {}).get('kills')
+    heralds = objectives.get('riftHerald', {}).get('kills')
 
     # Runes
-    defense_rune = stat_runes['defense']
-    flex_rune = stat_runes['flex']
-    offense_rune = stat_runes['offense']
+    defense_rune = stat_runes.get('defense')
+    flex_rune = stat_runes.get('flex')
+    offense_rune = stat_runes.get('offense')
 
-    primary_tree = primary_runes['style']
-    primary_keystone = primary_runes['selections'][0]['perk']
-    primary_choice1 = primary_runes['selections'][1]['perk']
-    primary_choice2 = primary_runes['selections'][2]['perk']
-    primary_choice3 = primary_runes['selections'][3]['perk']
+    primary_tree = primary_runes.get('style')
+    primary_selections = primary_runes.get('selections', [])
+    primary_keystone = primary_selections[0].get('perk') if len(primary_selections) > 0 else None
+    primary_choice1 = primary_selections[1].get('perk') if len(primary_selections) > 1 else None
+    primary_choice2 = primary_selections[2].get('perk') if len(primary_selections) > 2 else None
+    primary_choice3 = primary_selections[3].get('perk') if len(primary_selections) > 3 else None
 
-    secondary_tree = secondary_runes['style']
-    secondary_choice1 = secondary_runes['selections'][0]['perk']
-    secondary_choice2 = secondary_runes['selections'][1]['perk']
+    secondary_tree = secondary_runes.get('style')
+    secondary_selections = secondary_runes.get('selections', [])
+    secondary_choice1 = secondary_selections[0].get('perk') if len(secondary_selections) > 0 else None
+    secondary_choice2 = secondary_selections[1].get('perk') if len(secondary_selections) > 1 else None
 
 
     data_dict = {
@@ -427,7 +428,6 @@ def process_match_details(match: json, puuid: str, filterMap = 11) -> DataFrame:
         'Turret_Plates_Taken': [turret_plates],
         'Gold_Per_Minute': [gold_pm],
         'Damage_Per_Minute': [damage_pm],
-        'Takedowns_In_First_25_Minutes': [takedowns_in_25],
         'Vision_Score_Per_Minute': [vision_score_pm],
         'Lane_Minions_Before_10_Minutes': [cs_after_10],
         'Jungle_CS_Before_10_Minutes': [jungle_after_10],

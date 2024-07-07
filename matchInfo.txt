@@ -39,7 +39,6 @@ match -> info -> participants[idx] -> challenges:
         turretPlatesTaken
         goldPerMinute
         damagePerMinute
-        takedownsFirst25Minutes
         visionScorePerMinute
         laneMinionsFirst10Minutes
         jungleCsBefore10Minutes
