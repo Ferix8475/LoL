@@ -2,6 +2,8 @@ import requests
 import time
 import json
 import logging
+import pandas as pd
+from pandas import DataFrame
 
 def handle_rate_limit(resp):
     """
@@ -300,3 +302,17 @@ def fetch_match_timeline(match_id: str, api_key: str, region="americas") -> dict
             raise ValueError(f'Error: {resp.status_code}, {resp.json()['status']['message']}')
 
     
+def process_match_details(match: json, puuid: str) -> DataFrame:
+    """
+    Processes Match Details and Statistics of a player and stores relevant Information into a Dataframe. To See what information is processed, see matchInfo.txt
+
+    @Parameters:
+        match (json): The json of the match, retrieved using fetch_match_details() method
+        puuid (str): The player for which we are fetching statistics for
+
+    @Return:
+        A DataFrame with all relevant data
+    """
+    # Fetch the index of the participant
+
+    idx = match['metadata'][] 
