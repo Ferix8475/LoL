@@ -36,16 +36,21 @@ def update(datafile = data_file, new = False) -> None:
     
 
     # PARSE THROUGH NEW MATCHES AND UPDATE DATA
-    for i in range(idx, len(matchlist)):
-        print("New Match")
-        match_json = req.fetch_match_details(match_id = matchlist[i], api_key= api_key)
-        matchDF = req.process_match_details(match = match_json, puuid = puuid)
-        if matchDF is not None:
-            data = pd.concat([data, matchDF])
-
-
-    data.to_pickle(datafile)
-    req.matches_to_json(matchlist=matchlist, api_key=api_key, update_ind=len(matchlist))
+    try:
+        # PARSE THROUGH NEW MATCHES AND UPDATE DATA
+        for i in range(idx, len(matchlist)):
+            print("New Match, " + str(i))
+            match_json = req.fetch_match_details(match_id=matchlist[i], api_key=api_key)
+            matchDF = req.process_match_details(match=match_json, puuid=puuid)
+            if matchDF is not None:
+                data = pd.concat([data, matchDF])
+    except Exception as e:
+        print(f"Error encountered: {e}") 
+        # Server Disconnects/Inconsisitencies with Riot API
+    finally:
+        data.to_pickle(datafile)
+        req.matches_to_json(matchlist=matchlist, api_key=api_key, update_ind=i + 1)
+        print(data)
 
     print(data)
 
