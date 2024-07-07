@@ -12,7 +12,7 @@ gameName = riot_id.split("#")[0]
 tagline = riot_id.split("#")[1]
 
 puuid = req.fetch_account_puuid(gameName, tagline, api_key)
-
+print(puuid)
 
 def update():
 
@@ -21,11 +21,15 @@ def update():
 
     # FETCH MATCH LIST
     idx, _, matchlist = req.json_to_matches(matches_file)
+    print(len(matchlist))
 
     # PARSE THROUGH NEW MATCHES AND UPDATE DATA
     timeline_data = req.fetch_match_timeline(match_id=matchlist[idx], api_key=api_key)
     frames = timeline_data.get("info", {}).get("frames", [])
-    print(frames)
+    print(frames[4])
+    print(len(frames))
+
+    #print(frames)
 
 
 update()
