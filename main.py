@@ -7,6 +7,7 @@ from pandas import DataFrame
 
 matches_file = "matches.json"
 data_file = "data.pkl"
+results_file = "results.json"
 api_key = "RGAPI-1dc2f54b-a46b-44ec-8d6c-910ef2fbdf24"
 riot_id = "Ferix8475#NA1"
 
@@ -14,44 +15,31 @@ gameName = riot_id.split("#")[0]
 tagline = riot_id.split("#")[1]
 
 puuid = req.fetch_account_puuid(gameName, tagline, api_key)
-print(puuid)
 
 
+# UPDATE THE DATAFRAME
+req.update_data(puuid=puuid, api_key=api_key)
 
-def update(datafile = data_file, new = False) -> None:
+df = pd.read_pickle(data_file)
+# Group by Champion and Role
+grouped = df.groupby(['Champion', 'Role'])
 
-    # UPDATE MATCHES
-    req.update_matches(puuid, api_key)
+# Calculate win rate
+win_rate = grouped['Win'].mean().reset_index(name='Win Rate')
 
-    # FETCH MATCH LIST
-    idx, _, matchlist = req.json_to_matches(matches_file)
-    
-    if idx == len(matchlist):
-        return 
-    
-    if new:
-        data = pd.DataFrame()
-    else:
-        data = pd.read_pickle(datafile)
-    
+# Calculate average KDA for wins and losses
+avg_kda_wins = grouped.apply(lambda x: x[x['Win']]['KDA'].mean()).reset_index(name='Avg KDA - Wins')
+avg_kda_losses = grouped.apply(lambda x: x[~x['Win']]['KDA'].mean()).reset_index(name='Avg KDA - Losses')
 
-    # PARSE THROUGH NEW MATCHES AND UPDATE DATA
-    try:
-        # PARSE THROUGH NEW MATCHES AND UPDATE DATA
-        for i in range(idx, len(matchlist)):
-            print("New Match, " + str(i))
-            match_json = req.fetch_match_details(match_id=matchlist[i], api_key=api_key)
-            matchDF = req.process_match_details(match=match_json, puuid=puuid)
-            if matchDF is not None:
-                data = pd.concat([data, matchDF])
-    except Exception as e:
-        print(f"Error encountered: {e}") 
-        # Server Disconnects/Inconsisitencies with Riot API
-    finally:
-        data.to_pickle(datafile)
-        req.matches_to_json(matchlist=matchlist, api_key=api_key, update_ind=i + 1)
-        print(data)
+# Calculate average dragons killed for wins and losses
+avg_dragons_wins = grouped.apply(lambda x: x[x['Win']]['Dragons_Killed'].mean()).reset_index(name='Avg Dragons Killed - Wins')
+avg_dragons_losses = grouped.apply(lambda x: x[~x['Win']]['Dragons_Killed'].mean()).reset_index(name='Avg Dragons Killed - Losses')
 
-    print(data)
+# Merge average statistics for wins and losses
+merged_avg_stats = pd.merge(avg_kda_wins, avg_kda_losses, on=['Champion', 'Role'], how='outer')
+merged_avg_stats = pd.merge(merged_avg_stats, avg_dragons_wins, on=['Champion', 'Role'], how='outer')
+merged_avg_stats = pd.merge(merged_avg_stats, avg_dragons_losses, on=['Champion', 'Role'], how='outer')
 
-update()
+# Merge win rate with average statistics
+merged_stats = pd.merge(win_rate, merged_avg_stats, on=['Champion', 'Role'], how='outer')
+print(merged_stats)

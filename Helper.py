@@ -455,3 +455,55 @@ def process_match_details(match: json, puuid: str, filterMap = 11) -> DataFrame:
 
 
 
+
+
+def update_data(puuid: str, api_key: str, datafile = 'data.pkl', matches_file = 'matches.json', new = False) -> None:
+    """
+
+    Updates the Dataframe of all of the SR matches
+
+    @Parameters:
+        datafile (str): The name of the file for which to load/store the DataFrame object
+        matches_file (str): The name of the JSON file of the matchlist
+        puuid (str): The PUUID of the player for which we are looking at our data
+        api_key (str): The Riot API Key
+        new (bool): Set this flag to True if making a new DataFrame, False otherwise
+    
+    @Return:
+        None, Updates datafile with the matches
+
+
+    """
+
+    # UPDATE MATCHES
+    update_matches(puuid, api_key)
+
+    # FETCH MATCH LIST
+    idx, _, matchlist = json_to_matches(matches_file)
+    
+    if idx == len(matchlist):
+        return 
+    
+    if new:
+        data = pd.DataFrame()
+    else:
+        data = pd.read_pickle(datafile)
+    
+
+    # PARSE THROUGH NEW MATCHES AND UPDATE DATA
+    try:
+        # PARSE THROUGH NEW MATCHES AND UPDATE DATA
+        for i in range(idx, len(matchlist)):
+            print("New Match, " + str(i))
+            match_json = fetch_match_details(match_id=matchlist[i], api_key=api_key)
+            matchDF = process_match_details(match=match_json, puuid=puuid)
+            if matchDF is not None and not matchDF.empty:
+                data = pd.concat([data, matchDF])
+    except Exception as e:
+        print(f"Error encountered: {e}") 
+        # Server Disconnects/Inconsisitencies with Riot API
+    finally:
+        data.to_pickle(datafile)
+        matches_to_json(matchlist=matchlist, api_key=api_key, update_ind=i + 1)
+
+
