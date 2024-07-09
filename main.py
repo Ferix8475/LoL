@@ -2,44 +2,107 @@ import Helper as req
 import json
 import pandas as pd
 from pandas import DataFrame
-
+import requests 
+import time
 # GLOBAL VARIABLES
+
+start = time.time()
 
 matches_file = "matches.json"
 data_file = "data.pkl"
 results_file = "results.json"
-api_key = "RGAPI-1dc2f54b-a46b-44ec-8d6c-910ef2fbdf24"
+api_key = "RGAPI-987c33b6-6a1e-4a6f-93a4-a8edef2bd4ae"
 riot_id = "Ferix8475#NA1"
 
 gameName = riot_id.split("#")[0]
 tagline = riot_id.split("#")[1]
 
-puuid = req.fetch_account_puuid(gameName, tagline, api_key)
-
+puuid = "UgcPcMMVvDTOrgu68pkfhZqszLwqYckwUTpLjzjILBa2PtgMN2xI2opciuwdqrNZhhwz66JVhmCfGA"
 
 # UPDATE THE DATAFRAME
 req.update_data(puuid=puuid, api_key=api_key)
 
 df = pd.read_pickle(data_file)
-# Group by Champion and Role
-grouped = df.groupby(['Champion', 'Role'])
 
-# Calculate win rate
-win_rate = grouped['Win'].mean().reset_index(name='Win Rate')
 
-# Calculate average KDA for wins and losses
-avg_kda_wins = grouped.apply(lambda x: x[x['Win']]['KDA'].mean()).reset_index(name='Avg KDA - Wins')
-avg_kda_losses = grouped.apply(lambda x: x[~x['Win']]['KDA'].mean()).reset_index(name='Avg KDA - Losses')
+# Calculate Objective Control Numbers by Champion, Role, and Win
+objective_df = df.groupby(['Champion', 'Role', 'Win']).agg({
+    'Barons_Killed': 'mean',
+    'Void_Grubs_Killed': 'mean',
+    'Dragons_Killed': 'mean',
+    'Turret_Killed': 'mean',
+    'Rift_Heralds_Killed': 'mean',
 
-# Calculate average dragons killed for wins and losses
-avg_dragons_wins = grouped.apply(lambda x: x[x['Win']]['Dragons_Killed'].mean()).reset_index(name='Avg Dragons Killed - Wins')
-avg_dragons_losses = grouped.apply(lambda x: x[~x['Win']]['Dragons_Killed'].mean()).reset_index(name='Avg Dragons Killed - Losses')
+})
 
-# Merge average statistics for wins and losses
-merged_avg_stats = pd.merge(avg_kda_wins, avg_kda_losses, on=['Champion', 'Role'], how='outer')
-merged_avg_stats = pd.merge(merged_avg_stats, avg_dragons_wins, on=['Champion', 'Role'], how='outer')
-merged_avg_stats = pd.merge(merged_avg_stats, avg_dragons_losses, on=['Champion', 'Role'], how='outer')
 
-# Merge win rate with average statistics
-merged_stats = pd.merge(win_rate, merged_avg_stats, on=['Champion', 'Role'], how='outer')
-print(merged_stats)
+# Calculate the Winrates and Games Played By Role
+grouped = df.groupby(['Champion', 'Role', 'Win']).size().unstack(fill_value=0)
+grouped['Winrate'] = grouped[True] / (grouped[True] + grouped[False]) * 100
+grouped['Games Played'] = (grouped[True] + grouped[False]) 
+general_df = grouped[['Winrate', 'Games Played']].reset_index()
+general_df['Role'] = general_df['Role'].replace('', 'UNKNOWN')
+
+
+# Calculate Effectiveness by Wins and Losses
+effectiveness_df = df.groupby(['Champion', 'Role', 'Win']).agg({
+        'Total_Minions_Killed': 'mean',
+        'Total_Jungle_Monsters_Killed': 'mean',
+        'Total_Damage_DealtToChampions': 'mean',
+        'KDA': 'mean',
+        'Kill_Participation': 'mean',
+        'Damage_Share': 'mean',
+        'Turret_Plates_Taken': 'mean',
+        'Gold_Per_Minute': 'mean',
+        'Damage_Per_Minute': 'mean',
+        'Vision_Score_Per_Minute': 'mean',
+        'Lane_Minions_Before_10_Minutes': 'mean',
+        'Jungle_CS_Before_10_Minutes': 'mean',
+        'Sol_Kills':'mean'
+
+})
+
+# Fetch Runepage ID Matching Dictionaries and Map
+runes = req.json_extract_runes()
+treepage = {
+    8000: "Precision",
+    8100: "Domination",
+    8200: "Sorcery",
+    8300: "Inspiration",
+    8400: "Resolve"
+}
+
+df['Primary_Tree'] = df['Primary_Tree'].replace(treepage)
+df['Secondary_Tree'] = df['Secondary_Tree'].replace(treepage)
+df['Primary_Keyston'] = df['Primary_Keystone'].replace(runes)
+
+# Calculate Runepages by Tree Winrates
+tree_runes_df = df.groupby(['Champion', 'Role', 'Primary_Tree', 'Secondary_Tree']).agg(
+    Winrate=('Win', 'mean'),
+    Games_Played=('Win', 'count')
+) 
+
+# Calculate Runepages by Keystone and Secondary Tree Winrates
+keystone_runes_df = df.groupby(['Champion', 'Role', 'Primary_Keystone', 'Secondary_Tree']).agg(
+    Winrate=('Win', 'mean'),
+    Games_Played=('Win', 'count')
+)
+
+# Calculate Winrates by Item and Champion
+melted_df = df.melt(id_vars=['Champion', 'Win'], value_vars=['Item0', 'Item1', 'Item2', 'Item3', 'Item4', 'Item5', 'Item6'],
+                    var_name='ItemSlot', value_name='Item')
+
+melted_df = melted_df[melted_df['Item'] != 0] # Get rid of empty items
+
+item_winrate_df = melted_df.groupby(['Champion', 'Item']).agg(
+    Winrate=('Win', 'mean'),
+    Games_Played=('Win', 'count')
+).reset_index()
+
+mydict = req.json_extract_important_items()
+
+items_to_keep = list(mydict.keys())
+item_winrate_df = item_winrate_df[item_winrate_df['Item'].isin(items_to_keep)] # Get rid of unwanted items (components, epic items)
+
+item_winrate_df['Item'] = item_winrate_df['Item'].replace(mydict) # Replace IDs with Names
+

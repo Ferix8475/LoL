@@ -432,7 +432,6 @@ def process_match_details(match: json, puuid: str, filterMap = 11) -> DataFrame:
         'Lane_Minions_Before_10_Minutes': [cs_after_10],
         'Jungle_CS_Before_10_Minutes': [jungle_after_10],
         'Sol_Kills': [solos],
-        'Turret_Killed': [turrets_killed],
         'Barons_Killed': [barons],
         'Dragons_Killed': [dragons],
         "Void_Grubs_Killed": [horde],
@@ -506,4 +505,81 @@ def update_data(puuid: str, api_key: str, datafile = 'data.pkl', matches_file = 
         data.to_pickle(datafile)
         matches_to_json(matchlist=matchlist, api_key=api_key, update_ind=i + 1)
 
+
+def json_extract_runes(url = "https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/perks.json") -> list:
+    """
+    Returns a list of values associated with the key in a json file, no matter how nested it is
+
+    @Parameters:
+        obj (json): The json file for which we are looking through
+        key (any): The value of the key for which we are searching for values
+
+    @Return:
+        A list of any values associated with the key
+    
+    
+    """
+
+
+    def extract(obj, res, key): # Helper method to extract all values associated with
+        if isinstance(obj, dict):
+            for k, v in obj.items():
+                if k == key:
+                    res.append(v)
+                elif isinstance(v, (dict, list)):
+                    extract(v, res, key)
+        elif isinstance(obj, list):
+            for item in obj:
+                extract(item, res, key)
+        return res
+    
+    item_json = requests.get(url).json()
+
+    ids = extract(item_json, [], 'id')
+    names = extract(item_json, [], 'name')
+    mydict = dict(map(lambda i, j: (i,j), ids, names))
+
+    return mydict
+
+
+
+
+
+def json_extract_important_items(url = "https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/items.json") -> list:
+    """
+    Returns a dictionary of item id to item names of important items that we want to keep track of. The mapping information is provided in a raw json file from communitydragon https://www.communitydragon.org
+
+    @Parameters:
+        url (str): The url to the most recent, updated json of the item information of league of legends from community dragon
+
+    @Return:
+        A dictionary of mappings of item id to item name
+    
+    
+    """
+    
+    t2_boots = [3117, 3158, 3047, 3111, 3006, 3005, 3009, 3010, 3020] # ids of tier two boots
+
+
+    def extract(obj, res, key): # Helper method to extract all values associated with
+        if isinstance(obj, dict):
+            for k, v in obj.items():
+                if k == key:
+                    if k in t2_boots or (len(obj["to"]) == 0): # We want tier two boots and objects that don't build into anything else, ie legendary items, starter items, etc. 
+                        res.append(v)
+                elif isinstance(v, (dict, list)):
+                    extract(v, res, key)
+        elif isinstance(obj, list):
+            for item in obj:
+                extract(item, res, key)
+        return res
+
+    # Fetch the json from communitydragon
+    item_json = requests.get(url).json()
+
+    ids = extract(item_json, [], 'id')
+    names = extract(item_json, [], 'name')
+    mydict = dict(map(lambda i, j: (i,j), ids, names))
+
+    return mydict
 
