@@ -33,16 +33,16 @@ objective_df = df.groupby(['Champion', 'Role', 'Win']).agg({
     'Turret_Killed': 'mean',
     'Rift_Heralds_Killed': 'mean',
 
-})
+}).reset_index()
+objective_df = req.purge_df(objective_df)
 
 
 # Calculate the Winrates and Games Played By Role
-grouped = df.groupby(['Champion', 'Role', 'Win']).size().unstack(fill_value=0)
-grouped['Winrate'] = grouped[True] / (grouped[True] + grouped[False]) * 100
-grouped['Games Played'] = (grouped[True] + grouped[False]) 
-general_df = grouped[['Winrate', 'Games Played']].reset_index()
-general_df['Role'] = general_df['Role'].replace('', 'UNKNOWN')
-
+winrate_by_role = df.groupby(['Champion', 'Role']).agg(
+    Winrate=('Win', 'mean'),
+    Games_Played=('Win', 'count')
+).reset_index()
+winrate_by_role = req.purge_df(winrate_by_role)
 
 # Calculate Effectiveness by Wins and Losses
 effectiveness_df = df.groupby(['Champion', 'Role', 'Win']).agg({
@@ -60,7 +60,9 @@ effectiveness_df = df.groupby(['Champion', 'Role', 'Win']).agg({
         'Jungle_CS_Before_10_Minutes': 'mean',
         'Sol_Kills':'mean'
 
-})
+}).reset_index()
+effectiveness_df = req.purge_df(effectiveness_df)
+
 
 # Fetch Runepage ID Matching Dictionaries and Map
 runes = req.json_extract_runes()
@@ -80,13 +82,16 @@ df['Primary_Keyston'] = df['Primary_Keystone'].replace(runes)
 tree_runes_df = df.groupby(['Champion', 'Role', 'Primary_Tree', 'Secondary_Tree']).agg(
     Winrate=('Win', 'mean'),
     Games_Played=('Win', 'count')
-) 
+).reset_index()
+tree_runes_df = req.purge_df(tree_runes_df)
 
 # Calculate Runepages by Keystone and Secondary Tree Winrates
 keystone_runes_df = df.groupby(['Champion', 'Role', 'Primary_Keystone', 'Secondary_Tree']).agg(
     Winrate=('Win', 'mean'),
     Games_Played=('Win', 'count')
-)
+).reset_index()
+keystone_runes_df_runes_df = req.purge_df(keystone_runes_df)
+
 
 # Calculate Winrates by Item and Champion
 melted_df = df.melt(id_vars=['Champion', 'Win'], value_vars=['Item0', 'Item1', 'Item2', 'Item3', 'Item4', 'Item5', 'Item6'],
@@ -105,4 +110,5 @@ items_to_keep = list(mydict.keys())
 item_winrate_df = item_winrate_df[item_winrate_df['Item'].isin(items_to_keep)] # Get rid of unwanted items (components, epic items)
 
 item_winrate_df['Item'] = item_winrate_df['Item'].replace(mydict) # Replace IDs with Names
+item_winrate_df = req.purge_df(item_winrate_df)
 

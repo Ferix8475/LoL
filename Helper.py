@@ -508,14 +508,14 @@ def update_data(puuid: str, api_key: str, datafile = 'data.pkl', matches_file = 
 
 def json_extract_runes(url = "https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/perks.json") -> list:
     """
-    Returns a list of values associated with the key in a json file, no matter how nested it is
+    Returns a dictionary of the rune ID to the rune name
 
     @Parameters:
-        obj (json): The json file for which we are looking through
-        key (any): The value of the key for which we are searching for values
+        url (str): The url to the json for which we are looking through which has the raw data on the runes, found at communitydragon.org
+        
 
     @Return:
-        A list of any values associated with the key
+        A dictionary of mappings for {Rune ID: Rune Name}
     
     
     """
@@ -583,3 +583,22 @@ def json_extract_important_items(url = "https://raw.communitydragon.org/latest/p
 
     return mydict
 
+def purge_df(df : DataFrame) -> DataFrame:
+    """
+
+
+    Gets rid of "" and NaN columns in the DataFrame. The Purpose is because Riot API often fills
+    columns with these values if the game mechanic isn't in the game yet or the gamemode is different than that of 
+    Classic/Ranked SR. Thus, we purge the final DFs to get rid of looking at these classic
+
+    @Parameters
+        df (DataFrame): The dataframe for which we are purging the empty string and NaN columns
+
+    @Returns
+        a DataFrame of the input df without the rows that feature an empty string or a NaN value
+
+    
+    """
+    df = df[~df.isin(['']).any(axis=1)]
+    df = df.dropna()
+    return df
