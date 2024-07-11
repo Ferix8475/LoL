@@ -145,7 +145,7 @@ def fetch_all_matches(puuid: str, api_key:str, region = "americas", batch_size =
 
 
 
-def matches_to_json(matchlist: list[str], api_key: str, filename = "matches.json", region = "americas", update_ind = 0) -> None:
+def matches_to_json(matchlist: list[str], api_key: str, filename = "matches.json", region = "americas") -> None:
     """
 
     Stores matchlist into a json file as a dictionary under key 'matchlist', and the timestamp of the most recent match in 'latest'
@@ -183,7 +183,6 @@ def matches_to_json(matchlist: list[str], api_key: str, filename = "matches.json
     timestamp = latest_match['info']['gameCreation'] // 1000 # Calculate the timestamp of the start of the most recent game
 
     res_dict = {
-        "last_update": update_ind,
         'latest': timestamp,
         'matchlist': matchlist
     } 
@@ -211,10 +210,10 @@ def json_to_matches(filename = "matches.json") -> tuple:
     with open(filename, 'r') as file:
         data = json.load(file)
     
-    if 'last_update' not in data or 'latest' not in data or 'matchlist' not in data:
+    if 'latest' not in data or 'matchlist' not in data:
         raise ValueError("JSON file not properly formatted.")
 
-    return data["last_update"], data['latest'], data['matchlist']
+    return data['latest'], data['matchlist']
 
 
 
@@ -232,13 +231,14 @@ def update_matches(puuid: str, api_key: str, filename = "matches.json") -> None:
     @Returns:
         None, Updates filename
     """
-    last_ind, latest_timestamp, matchlist = json_to_matches(filename)
+    latest_timestamp, matchlist = json_to_matches(filename)
 
     new_matches = fetch_all_matches(puuid=puuid, api_key = api_key, startTime = latest_timestamp)[:-1]
+    temp = len(new_matches)
     new_matches.extend(matchlist)
 
-    matches_to_json(matchlist = new_matches, api_key = api_key, filename = "matches.json", update_ind = last_ind)
-
+    matches_to_json(matchlist = new_matches, api_key = api_key, filename = "matches.json")
+    return temp
 
 
 def fetch_match_details(match_id: str, api_key: str, region = "americas") -> dict:
@@ -475,16 +475,18 @@ def update_data(puuid: str, api_key: str, datafile = 'data.pkl', matches_file = 
     """
 
     # UPDATE MATCHES
-    update_matches(puuid, api_key)
+    num_new_matches = update_matches(puuid, api_key)
+    print(num_new_matches)
 
     # FETCH MATCH LIST
-    idx, _, matchlist = json_to_matches(matches_file)
+    _, matchlist = json_to_matches(matches_file)
     
-    if idx == len(matchlist):
+    if num_new_matches == 0:
         return 
     
     if new:
         data = pd.DataFrame()
+        num_new_matches = len(matchlist)
     else:
         data = pd.read_pickle(datafile)
     
@@ -492,8 +494,8 @@ def update_data(puuid: str, api_key: str, datafile = 'data.pkl', matches_file = 
     # PARSE THROUGH NEW MATCHES AND UPDATE DATA
     try:
         # PARSE THROUGH NEW MATCHES AND UPDATE DATA
-        for i in range(idx, len(matchlist)):
-            print("New Match, " + str(i))
+        for i in range(num_new_matches):
+            print("New Match, " + matchlist[i])
             match_json = fetch_match_details(match_id=matchlist[i], api_key=api_key)
             matchDF = process_match_details(match=match_json, puuid=puuid)
             if matchDF is not None and not matchDF.empty:
@@ -503,7 +505,7 @@ def update_data(puuid: str, api_key: str, datafile = 'data.pkl', matches_file = 
         # Server Disconnects/Inconsisitencies with Riot API
     finally:
         data.to_pickle(datafile)
-        matches_to_json(matchlist=matchlist, api_key=api_key, update_ind=i + 1)
+        matches_to_json(matchlist=matchlist, api_key=api_key)
 
 
 def json_extract_runes(url = "https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/perks.json") -> list:
