@@ -481,7 +481,8 @@ def update_data(puuid: str, api_key: str, datafile = 'data.pkl', matches_file = 
     # FETCH MATCH LIST
     _, matchlist = json_to_matches(matches_file)
     
-    if num_new_matches == 0:
+    if num_new_matches == 0 and not new:
+        print("No New Matches")
         return 
     
     if new:

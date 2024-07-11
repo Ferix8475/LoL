@@ -25,13 +25,12 @@ req.update_data(puuid=puuid, api_key=api_key)
 df = pd.read_pickle(data_file)
 
 
-
 # Calculate Objective Control Numbers by Champion, Role, and Win
 objective_df = df.groupby(['Champion', 'Role', 'Win']).agg({
     'Barons_Killed': 'mean',
     'Void_Grubs_Killed': 'mean',
     'Dragons_Killed': 'mean',
-    'Turret_Killed': 'mean',
+    'Turrets_Killed': 'mean',
     'Rift_Heralds_Killed': 'mean',
 
 }).reset_index()
