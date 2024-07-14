@@ -495,12 +495,12 @@ def update_data(puuid: str, api_key: str, datafile = 'data.pkl', matches_file = 
     # PARSE THROUGH NEW MATCHES AND UPDATE DATA
     try:
         # PARSE THROUGH NEW MATCHES AND UPDATE DATA
-        for i in range(num_new_matches):
+        for i in range(num_new_matches - 1, -1, -1):
             print("New Match, " + matchlist[i])
             match_json = fetch_match_details(match_id=matchlist[i], api_key=api_key)
             matchDF = process_match_details(match=match_json, puuid=puuid)
             if matchDF is not None and not matchDF.empty:
-                data = pd.concat([data, matchDF])
+                data = pd.concat([matchDF, data])
     except Exception as e:
         print(f"Error encountered: {e}") 
         # Server Disconnects/Inconsisitencies with Riot API

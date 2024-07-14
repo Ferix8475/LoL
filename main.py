@@ -11,7 +11,7 @@ start = time.time()
 matches_file = "matches.json"
 data_file = "data.pkl"
 results_file = "results.json"
-api_key = "RGAPI-7854798f-65e6-4664-9623-124101f7e7a4"
+api_key = "RGAPI-02033ac0-325a-4688-bdef-96bfdcf64cc9"
 riot_id = "Ferix8475#NA1"
 
 gameName = riot_id.split("#")[0]
@@ -21,8 +21,8 @@ puuid = "UgcPcMMVvDTOrgu68pkfhZqszLwqYckwUTpLjzjILBa2PtgMN2xI2opciuwdqrNZhhwz66J
 
 # UPDATE THE DATAFRAME
 req.update_data(puuid=puuid, api_key=api_key)
-
 df = pd.read_pickle(data_file)
+df.to_csv('output.csv')
 
 
 # Calculate Objective Control Numbers by Champion, Role, and Win
