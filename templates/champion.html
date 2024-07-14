@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ champion }} Data ({{ role }})</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h1>Data for {{ champion }} ({{ role }})</h1>
+
+    <h2>Objective Control</h2>
+    <canvas id="objectiveChart" width="400" height="200"></canvas>
+
+    <h2>Winrate By Role</h2>
+    <canvas id="winrateChart" width="400" height="200"></canvas>
+
+    <!-- Add more sections and charts as needed -->
+
+    <script>
+        const objectiveData = {{ data['objective_data'] | tojson }};
+        const winrateData = {{ data['winrate_data'] | tojson }};
+
+        // Example for Objective Control Chart
+        const ctx1 = document.getElementById('objectiveChart').getContext('2d');
+        new Chart(ctx1, {
+            type: 'bar',
+            data: {
+                labels: ['Barons Killed', 'Dragons Killed', 'Turrets Killed'],
+                datasets: [{
+                    label: 'Objective Control',
+                    data: [
+                        objectiveData.length ? objectiveData[0].Barons_Killed : 0,
+                        objectiveData.length ? objectiveData[0].Dragons_Killed : 0,
+                        objectiveData.length ? objectiveData[0].Turrets_Killed : 0
+                    ],
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Example for Winrate By Role Chart
+        const ctx2 = document.getElementById('winrateChart').getContext('2d');
+        new Chart(ctx2, {
+            type: 'bar',
+            data: {
+                labels: ['Winrate'],
+                datasets: [{
+                    label: 'Winrate',
+                    data: [
+                        winrateData.length ? winrateData[0].Winrate : 0
+                    ],
+                    backgroundColor: 'rgba(255, 159, 64, 0.2)',
+                    borderColor: 'rgba(255, 159, 64, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Add more scripts for additional charts as needed
+    </script>
+</body>
+</html>

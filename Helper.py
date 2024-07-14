@@ -605,3 +605,112 @@ def purge_df(df : DataFrame) -> DataFrame:
     df = df[~df.isin(['']).any(axis=1)]
     df = df.dropna()
     return df
+
+def df_to_statdfs(df : DataFrame) -> tuple:
+    
+    """
+    Takes a dataframe of matches as raw data (unprocessed ids, etc) and turns it into a couple new dataframes, most of them grouping by
+    wins and losses, tracking different things like objective control, general stats like kda/gold, item winrates, and rune winrates. 
+
+    @Parameters
+        df (DataFrame): The dataframe with the list of matches and their data
+
+    @Returns
+        a tuple of DataFrames returned in the following order: 
+            objective_df: df that sorts objective control by champion and role
+            winrate_by_role: df that calculates winrates based on champion and role
+            effectiveness_df: df that displays general statistics like kda, cs, gold, turret plates, vision score, etc.
+            tree_runes_df: df that displays winrates of runes by the names of the trees
+            keystone_runes_df: df that displays winrates of runes by the name of the keystone, plus the name of the secondary tree
+            item_winrate_df: df that displays winrates when building certain legendary items, organized by champion
+    
+    """
+
+    # Calculate Objective Control Numbers by Champion, Role, and Win
+    objective_df = df.groupby(['Champion', 'Role', 'Win']).agg({
+        'Barons_Killed': 'mean',
+        'Void_Grubs_Killed': 'mean',
+        'Dragons_Killed': 'mean',
+        'Turrets_Killed': 'mean',
+        'Rift_Heralds_Killed': 'mean',
+
+    }).reset_index()
+    objective_df = purge_df(objective_df)
+
+
+    # Calculate the Winrates and Games Played By Role
+    winrate_by_role = df.groupby(['Champion', 'Role']).agg(
+        Winrate=('Win', 'mean'),
+        Games_Played=('Win', 'count')
+    ).reset_index()
+    winrate_by_role = purge_df(winrate_by_role)
+
+    # Calculate Effectiveness by Wins and Losses
+    effectiveness_df = df.groupby(['Champion', 'Role', 'Win']).agg({
+            'Total_Minions_Killed': 'mean',
+            'Total_Jungle_Monsters_Killed': 'mean',
+            'Total_Damage_DealtToChampions': 'mean',
+            'KDA': 'mean',
+            'Kill_Participation': 'mean',
+            'Damage_Share': 'mean',
+            'Turret_Plates_Taken': 'mean',
+            'Gold_Per_Minute': 'mean',
+            'Damage_Per_Minute': 'mean',
+            'Vision_Score_Per_Minute': 'mean',
+            'Lane_Minions_Before_10_Minutes': 'mean',
+            'Jungle_CS_Before_10_Minutes': 'mean',
+            'Sol_Kills':'mean'
+
+    }).reset_index()
+    effectiveness_df = purge_df(effectiveness_df)
+
+
+    # Fetch Runepage ID Matching Dictionaries and Map
+    runes = json_extract_runes()
+    treepage = {
+        8000: "Precision",
+        8100: "Domination",
+        8200: "Sorcery",
+        8300: "Inspiration",
+        8400: "Resolve"
+    }
+
+    df['Primary_Tree'] = df['Primary_Tree'].replace(treepage)
+    df['Secondary_Tree'] = df['Secondary_Tree'].replace(treepage)
+    df['Primary_Keyston'] = df['Primary_Keystone'].replace(runes)
+
+    # Calculate Runepages by Tree Winrates
+    tree_runes_df = df.groupby(['Champion', 'Role', 'Primary_Tree', 'Secondary_Tree']).agg(
+        Winrate=('Win', 'mean'),
+        Games_Played=('Win', 'count')
+    ).reset_index()
+    tree_runes_df = purge_df(tree_runes_df)
+
+    # Calculate Runepages by Keystone and Secondary Tree Winrates
+    keystone_runes_df = df.groupby(['Champion', 'Role', 'Primary_Keystone', 'Secondary_Tree']).agg(
+        Winrate=('Win', 'mean'),
+        Games_Played=('Win', 'count')
+    ).reset_index()
+    keystone_runes_df = purge_df(keystone_runes_df)
+
+
+    # Calculate Winrates by Item and Champion
+    melted_df = df.melt(id_vars=['Champion', 'Win'], value_vars=['Item0', 'Item1', 'Item2', 'Item3', 'Item4', 'Item5', 'Item6'],
+                        var_name='ItemSlot', value_name='Item')
+
+    melted_df = melted_df[melted_df['Item'] != 0] # Get rid of empty items
+
+    item_winrate_df = melted_df.groupby(['Champion', 'Item']).agg(
+        Winrate=('Win', 'mean'),
+        Games_Played=('Win', 'count')
+    ).reset_index()
+
+    mydict = json_extract_important_items()
+
+    items_to_keep = list(mydict.keys())
+    item_winrate_df = item_winrate_df[item_winrate_df['Item'].isin(items_to_keep)] # Get rid of unwanted items (components, epic items)
+
+    item_winrate_df['Item'] = item_winrate_df['Item'].replace(mydict) # Replace IDs with Names
+    item_winrate_df = purge_df(item_winrate_df)
+
+    return objective_df, winrate_by_role, effectiveness_df, tree_runes_df, keystone_runes_df, item_winrate_df
