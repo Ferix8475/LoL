@@ -1,0 +1,101 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    height: 100vh; 
+    display: flex;
+    flex-direction: column;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #333;
+    color: white;
+}
+
+.navbar .navbar-image{
+    margin: 0;
+    padding: 0;
+    width: rem;
+    height: 5rem;
+
+}
+
+.brand-title {
+    font-size: 1.5rem;
+    margin: .5rem;
+}
+
+.navbar-links ul {
+    margin: 0;
+    padding: 0;
+    display: flex;
+
+}
+
+.navbar-links li {
+    list-style: none;
+
+}
+
+.navbar-links li a{
+    text-decoration: none;
+    color: white;
+    padding: 1rem;
+    display: block;
+}
+
+.navbar-links li:hover{
+    background-color: #555
+}
+
+
+
+.searchbar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #d3c3c3;
+    box-shadow: 0 0 10px rgba(196, 189, 189, 0.1);
+    padding: 0.5rem;
+    height: 10%;
+    width: 60%;    
+    margin: 20%;
+}
+
+.champion-name {
+    border:#333;
+    padding: 0.5rem;
+    font-size: 1rem;
+    border-radius: 100px;
+    width: 60%;
+    margin-right: 2rem;
+    background-color: rgb(241, 241, 241);
+}
+
+
+
+.role-dropdown-container select {
+    border: none;
+    padding: 0.5rem;
+    font-size: 1rem;
+    border-radius: 5px;
+    background: #fff;
+    cursor: pointer;
+}
+
+.role-dropdown-container select option {
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+}
+
+.dropdown-container select option::before {
+    content: Select Option ; 
+    margin-right: 0.5rem;
+}

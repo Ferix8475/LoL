@@ -1,9 +1,13 @@
+import os
+import re
 import requests
 import time
 import json
 import logging
 import pandas as pd
 from pandas import DataFrame
+
+latest_patch = '14.14.1'
 
 def handle_rate_limit(resp):
     """
@@ -714,3 +718,99 @@ def df_to_statdfs(df : DataFrame) -> tuple:
     item_winrate_df = purge_df(item_winrate_df)
 
     return objective_df, winrate_by_role, effectiveness_df, tree_runes_df, keystone_runes_df, item_winrate_df
+
+
+def download_item_images(dir = './templates/images/items') -> None:
+    """
+    Downloads images of items that are to be used in the website
+
+    @Parameters:
+        url (str): The base url to images by id, found from data dragon
+
+    @Return:
+        None, downloads items into the dir folder
+    
+    
+    """
+    
+
+    item_dict = json_extract_important_items()
+
+    for id in item_dict:
+        name = item_dict[id]
+        if re.search(r'[<>:"/\\|?*\n\r]', name):
+            continue
+        items_url = f'http://ddragon.leagueoflegends.com/cdn/{latest_patch}/img/item/{id}.png'
+        save_path = dir + f'/{name}.png'
+        
+        resp = requests.get(items_url)
+        if resp.status_code == 200:
+            with open(save_path, 'wb') as file:
+                print(f'{name} downloaded')
+                file.write(resp.content)
+
+
+def download_item_images(dir = './templates/images/champions') -> None:
+    """
+    Downloads images of items that are to be used in the website
+
+    @Parameters:
+        url (str): The base url to images by id, found from data dragon
+
+    @Return:
+        None, downloads items into the dir folder
+    
+    
+    """
+    
+
+    item_dict = json_extract_important_items()
+
+    for id in item_dict:
+        name = item_dict[id]
+        if re.search(r'[<>:"/\\|?*\n\r]', name):
+            continue
+        items_url = f'http://ddragon.leagueoflegends.com/cdn/{latest_patch}/img/item/{id}.png'
+        save_path = dir + f'/{name}.png'
+        
+        resp = requests.get(items_url)
+        if resp.status_code == 200:
+            with open(save_path, 'wb') as file:
+                file.write(resp.content)
+
+
+
+
+
+def download_champion_images(dir = './templates/images/champions') -> None:
+
+    """
+    Downloads images of champion icons that are to be used in the website
+
+    @Parameters:
+        url (str): The base url to images by id, found from data dragon
+
+    @Return:
+        None, downloads items into the dir folder
+    
+    """
+    
+
+    
+    champions_url = f'http://ddragon.leagueoflegends.com/cdn/{latest_patch}/data/en_US/champion.json'
+    resp = requests.get(champions_url)
+    data = resp.json()
+
+
+    for champion in data['data']:
+        champ_name = "Wukong" if champion == "MonkeyKing" else champion
+
+
+        icon_url = f'http://ddragon.leagueoflegends.com/cdn/{latest_patch}/img/champion/{champion}.png'        
+        save_path = dir + f'/{champ_name}.png'
+        
+        resp = requests.get(icon_url)
+        if resp.status_code == 200:
+            with open(save_path, 'wb') as file:
+                file.write(resp.content)
+

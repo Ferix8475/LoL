@@ -7,7 +7,7 @@ app = Flask(__name__)
 matches_file = "matches.json"
 data_file = "data.pkl"
 results_file = "results.json"
-api_key = "RGAPI-02033ac0-325a-4688-bdef-96bfdcf64cc9"
+api_key = "RGAPI-ece977df-9a74-43a0-b83b-09d98b03dece"
 riot_id = "Ferix8475#NA1"
 
 gameName = riot_id.split("#")[0]
@@ -44,8 +44,7 @@ def get_champion_data(champion :str, role: str) -> dict:
 
 @app.route('/')
 def home():
-    roles = ["TOP", "JUNGLE", "MIDDLE", "BOTTOM", "UTILITY"]
-    return render_template('index.html', roles=roles)
+    return render_template('index.html')
 
 @app.route('/champion', methods=['POST'])
 def champion():
