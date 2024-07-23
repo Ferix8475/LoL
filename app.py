@@ -1,6 +1,7 @@
-from flask import Flask, jsonify, render_template, request
+from flask import Flask, jsonify, render_template, request, send_from_directory
 import pandas as pd
 import Helper as req
+import os
 
 app = Flask(__name__)
 
@@ -16,10 +17,14 @@ tagline = riot_id.split("#")[1]
 puuid = "UgcPcMMVvDTOrgu68pkfhZqszLwqYckwUTpLjzjILBa2PtgMN2xI2opciuwdqrNZhhwz66JVhmCfGA"
 
 # UPDATE THE DATAFRAME
-req.update_data(puuid=puuid, api_key=api_key)
+#req.update_data(puuid=puuid, api_key=api_key)
 df = pd.read_pickle(data_file)
 
-# GET THE PROCESSED DATAFRAMES
+
+
+"""
+Data Retrieval
+"""
 obj_df, wr_df, stats_df, tree_df, keystone_df, item_df = req.df_to_statdfs(df)
 
 def get_champion_data(champion :str, role: str) -> dict:
@@ -41,17 +46,37 @@ def get_champion_data(champion :str, role: str) -> dict:
     }
 
 
+"""
+Image Retrieval
+"""
+def get_images_from_folder(folder_path):
+    try:
+        image_files = [f for f in os.listdir(folder_path) if f.endswith('.png')]
+        return image_files
+    except Exception as e:
+        return {'error': str(e)}
 
+@app.route('/images/<path:filename>')
+def serve_image(filename):
+    return send_from_directory('static/images', filename)
+
+@app.route('/api/images')
+def get_images():
+    folder = request.args.get('folder', 'general/poro')
+    image_folder = os.path.join('static/images', folder)
+    image_files = get_images_from_folder(image_folder)
+    if 'error' in image_files:
+        return jsonify({'error': image_files['error']}), 500
+    return jsonify(image_files)
+    
+
+"""
+Template Rendering
+"""
 @app.route('/')
 def home():
     return render_template('index.html')
 
-@app.route('/champion', methods=['POST'])
-def champion():
-    champion = request.form['champion']
-    role = request.form['role']
-    data = get_champion_data(champion, role)
-    return render_template('champion.html', champion=champion, role=role, data=data)
 
 if __name__ == '__main__':
     app.run(debug=True)
