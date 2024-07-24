@@ -1,3 +1,4 @@
+/* General */
 
 .navbar {
     display: flex;
@@ -6,6 +7,10 @@
     background-color: #333;
     color: white;
 }
+
+/* Left Side of the Navbar:
+    League Icon
+    Title of Website */
 
 .league-icon{
     
@@ -21,6 +26,11 @@
     font-size: 1.5rem;
     margin: .5rem;
 }
+
+/* Right Side of the Navbar:
+    Home button + Hover Animations
+    Random Poro Image */
+
 
 .navbar-links ul {
     margin: 0;

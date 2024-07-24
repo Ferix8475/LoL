@@ -16,11 +16,19 @@ document.getElementById('search-form').addEventListener('submit', function(event
         if (data.exists) {
             window.location.href = '/champion';
         } else {
-            document.getElementById('error-message').textContent = 'No data found for the specified champion and role.';
+            document.getElementById('error-message').textContent = 'No data found for the specified champion and role (Click to Close Notification)';
             document.getElementById('error-message').style.display = 'block';
         }
     })
     .catch(error => {
         console.error('Error:', error);
+    });
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+    const errorMessage = document.getElementById('error-message');
+
+    errorMessage.addEventListener('click', function () {
+        errorMessage.style.display = 'none';
     });
 });

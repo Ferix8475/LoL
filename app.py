@@ -75,7 +75,8 @@ Data Retrieval
 @app.route('/api/search', methods=['POST'])
 def search():
     data = request.get_json()
-    info = get_champion_data(data['champion-name'], data['role-select'])
+    print(data)
+    info = get_champion_data(data['championName'], data['role'])
     exists = any(info.values())
 
     if exists:

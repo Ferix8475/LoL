@@ -31,32 +31,38 @@
             </ul>
         </div>
     </nav>
+    <div class = "search-engine">
+        <p class="searchbar-title"> Search for Statistics by Champion and Role</p>
+        <div class="searchbar">
 
-    <div class="searchbar">
-        <form id="search-form">
-            <img class="random-poro-image searchbar-poro" src="" alt="Random Poro Image">
-
-            <input class="champion-name" id="champion-name" type="text" placeholder="Enter Champion Name...." required>
-            <div class="role-dropdown-container">
-                <div class="custom-select">
-                    <select id="role-select" required>
-                        <option value="TOP" data-icon="{{ url_for('static', filename='images/general/positions/top.png') }}">Top</option>
-                        <option value="JUNGLE" data-icon="{{ url_for('static', filename='images/general/positions/jungle.png') }}">Jungle</option>
-                        <option value="MIDDLE" data-icon="{{ url_for('static', filename='images/general/positions/middle.png') }}">Middle</option>
-                        <option value="BOTTOM" data-icon="{{ url_for('static', filename='images/general/positions/bottom.png') }}">Bottom</option>
-                        <option value="UTILITY" data-icon="{{ url_for('static', filename='images/general/positions/support.png') }}">Support</option>
-                    </select>
-                    <div class="selected-option">
-                        <img src="" alt="" class="option-icon">
-                        <span class="option-text"></span>
+    
+            <form class = "search-form" id="search-form">
+                <img class="random-poro-image searchbar-poro" src="" alt="Random Poro Image">
+    
+                <input class="champion-name" id="champion-name" type="text" placeholder="Enter Champion Name...." required>
+                <div class="role-dropdown-container">
+                    <div class="custom-select">
+                        <select id="role-select" required>
+                            <option value="TOP" data-icon="{{ url_for('static', filename='images/general/positions/top.png') }}">Top</option>
+                            <option value="JUNGLE" data-icon="{{ url_for('static', filename='images/general/positions/jungle.png') }}">Jungle</option>
+                            <option value="MIDDLE" data-icon="{{ url_for('static', filename='images/general/positions/middle.png') }}">Middle</option>
+                            <option value="BOTTOM" data-icon="{{ url_for('static', filename='images/general/positions/bottom.png') }}">Bottom</option>
+                            <option value="UTILITY" data-icon="{{ url_for('static', filename='images/general/positions/support.png') }}">Support</option>
+                        </select>
+                        <div class="selected-option">
+                            <img src="" alt="" class="option-icon">
+                            <span class="option-text"></span>
+                        </div>
+                        <div class="options-container"></div>
                     </div>
-                    <div class="options-container"></div>
                 </div>
-            </div>
-            <button type="submit">Search</button>
-        </form>
-        <p id="error-message" style="color: red; display: none;"></p>
+                <button class = "search-button" type="submit">Search</button>
+            </form>
+        </div>
+        <p class = 'error-message' id="error-message" style="color: red; display: none;"></p>
+
     </div>
+    
 
     <div class="divider-one"></div>
 
