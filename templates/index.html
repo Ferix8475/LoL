@@ -12,6 +12,8 @@
     <script src="{{ url_for('static', filename='scripts/role_dropdown.js') }}" defer></script>
     <script src="{{ url_for('static', filename='scripts/item_carousel.js') }}" defer></script>
     <script src="{{ url_for('static', filename='scripts/champion_carousel.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='scripts/searchbar_submission.js') }}" defer></script>
+
     <title>League Of Legends Statistics</title>
 </head>
 <body>
@@ -31,24 +33,29 @@
     </nav>
 
     <div class="searchbar">
-        <img class="random-poro-image searchbar-poro" src="" alt="Random Poro Image">
-        <input class="champion-name" type="text" placeholder="Enter Champion Name and Role....">
-        <div class="role-dropdown-container">
-            <div class="custom-select">
-                <select id="role-select">
-                    <option value="TOP" data-icon="{{ url_for('static', filename='images/general/positions/top.png') }}">Top</option>
-                    <option value="JUNGLE" data-icon="{{ url_for('static', filename='images/general/positions/jungle.png') }}">Jungle</option>
-                    <option value="MIDDLE" data-icon="{{ url_for('static', filename='images/general/positions/middle.png') }}">Middle</option>
-                    <option value="BOTTOM" data-icon="{{ url_for('static', filename='images/general/positions/bottom.png') }}">Bottom</option>
-                    <option value="UTILITY" data-icon="{{ url_for('static', filename='images/general/positions/support.png') }}">Support</option>
-                </select>
-                <div class="selected-option">
-                    <img src="" alt="" class="option-icon">
-                    <span class="option-text"></span>
+        <form id="search-form">
+            <img class="random-poro-image searchbar-poro" src="" alt="Random Poro Image">
+
+            <input class="champion-name" id="champion-name" type="text" placeholder="Enter Champion Name...." required>
+            <div class="role-dropdown-container">
+                <div class="custom-select">
+                    <select id="role-select" required>
+                        <option value="TOP" data-icon="{{ url_for('static', filename='images/general/positions/top.png') }}">Top</option>
+                        <option value="JUNGLE" data-icon="{{ url_for('static', filename='images/general/positions/jungle.png') }}">Jungle</option>
+                        <option value="MIDDLE" data-icon="{{ url_for('static', filename='images/general/positions/middle.png') }}">Middle</option>
+                        <option value="BOTTOM" data-icon="{{ url_for('static', filename='images/general/positions/bottom.png') }}">Bottom</option>
+                        <option value="UTILITY" data-icon="{{ url_for('static', filename='images/general/positions/support.png') }}">Support</option>
+                    </select>
+                    <div class="selected-option">
+                        <img src="" alt="" class="option-icon">
+                        <span class="option-text"></span>
+                    </div>
+                    <div class="options-container"></div>
                 </div>
-                <div class="options-container"></div>
             </div>
-        </div>
+            <button type="submit">Search</button>
+        </form>
+        <p id="error-message" style="color: red; display: none;"></p>
     </div>
 
     <div class="divider-one"></div>

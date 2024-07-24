@@ -35,7 +35,7 @@ def get_champion_data(champion :str, role: str) -> dict:
     tree_runes_data = tree_df[(tree_df['Champion'] == champion) & (tree_df['Role'] == role)].to_dict(orient='records')
     keystone_runes_data = keystone_df[(keystone_df['Champion'] == champion) & (keystone_df['Role'] == role)].to_dict(orient='records')
     item_winrate_data = item_df[(item_df['Champion'] == champion)].to_dict(orient='records')
-
+    
     return {
         "objective_data": objective_data,
         "winrate_data": winrate_data,
@@ -68,7 +68,22 @@ def get_images():
     if 'error' in image_files:
         return jsonify({'error': image_files['error']}), 500
     return jsonify(image_files)
+
+"""
+Data Retrieval
+"""
+@app.route('/api/search', methods=['POST'])
+def search():
+    data = request.get_json()
+    info = get_champion_data(data['champion-name'], data['role-select'])
+    exists = any(info.values())
+
+    if exists:
+        return jsonify({'exists': True})
+    else:
+        return jsonify({'exists': False})
     
+
 
 """
 Template Rendering
@@ -77,6 +92,9 @@ Template Rendering
 def home():
     return render_template('index.html')
 
+@app.route('/champion')
+def champion():
+    return render_template('champion.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
