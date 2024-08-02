@@ -6,11 +6,7 @@
     align-items: center;
     display: flex;
     flex-direction: column;
-    height: 10%;
-    margin-left: auto;
-    margin-right: auto;
     margin-top: 15%;
-    width: 70%;
     z-index: 3;
     
 }
@@ -21,10 +17,9 @@
     background: #79bcfc;
     box-shadow: 0 0 10px rgba(38, 8, 109, 0.1);
     padding: 0.5rem;
-    height: 100%;
-    margin-left: auto;
-    margin-right: auto;
-    width: 90%;
+    height: 130px;
+    
+    width: 1250px;
 }
 
 

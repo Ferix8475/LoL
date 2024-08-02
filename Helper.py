@@ -31,7 +31,6 @@ def handle_rate_limit(resp):
 
 
 
-
 def fetch_account_puuid(gameName: str, tagLine: str, api_key: str, region = "americas") -> dict:
     """
 
@@ -62,7 +61,6 @@ def fetch_account_puuid(gameName: str, tagLine: str, api_key: str, region = "ame
             continue
         else:
             raise ValueError(f'Error: {resp.status_code}, {resp.json()["status"]["message"]}')
-
 
 
 
@@ -110,7 +108,6 @@ def fetch_match_batch(puuid: str, start: int, count: int, api_key: str, startTim
 
 
 
-
 def fetch_all_matches(puuid: str, api_key:str, region = "americas", batch_size = 100, startTime = None) -> list:
     """
 
@@ -146,7 +143,6 @@ def fetch_all_matches(puuid: str, api_key:str, region = "americas", batch_size =
             
 
     return res_matches
-
 
 
 
@@ -198,7 +194,6 @@ def matches_to_json(matchlist: list[str], api_key: str, filename = "matches.json
 
 
 
-
 def json_to_matches(filename = "matches.json") -> tuple:
     """
 
@@ -219,7 +214,6 @@ def json_to_matches(filename = "matches.json") -> tuple:
         raise ValueError("JSON file not properly formatted.")
 
     return data['latest'], data['matchlist']
-
 
 
 
@@ -244,6 +238,7 @@ def update_matches(puuid: str, api_key: str, filename = "matches.json") -> None:
 
     matches_to_json(matchlist = new_matches, api_key = api_key, filename = "matches.json")
     return temp
+
 
 
 def fetch_match_details(match_id: str, api_key: str, region = "americas") -> dict:
@@ -276,6 +271,7 @@ def fetch_match_details(match_id: str, api_key: str, region = "americas") -> dic
             raise ValueError(f'Error: {resp.status_code}, {resp.json()['status']['message']}')
 
     
+
 def fetch_match_timeline(match_id: str, api_key: str, region="americas") -> dict:
     
     """
@@ -305,6 +301,7 @@ def fetch_match_timeline(match_id: str, api_key: str, region="americas") -> dict
             continue
         else:
             raise ValueError(f'Error: {resp.status_code}, {resp.json()['status']['message']}')
+
 
     
 def process_match_details(match: json, puuid: str, filterMap = 11) -> DataFrame:
@@ -458,9 +455,6 @@ def process_match_details(match: json, puuid: str, filterMap = 11) -> DataFrame:
 
 
 
-
-
-
 def update_data(puuid: str, api_key: str, datafile = 'data.pkl', matches_file = 'matches.json', new = False) -> None:
     """
 
@@ -514,6 +508,7 @@ def update_data(puuid: str, api_key: str, datafile = 'data.pkl', matches_file = 
         matches_to_json(matchlist=matchlist, api_key=api_key)
 
 
+
 def json_extract_runes(url = "https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/perks.json") -> list:
     """
     Returns a dictionary of the rune ID to the rune name
@@ -548,8 +543,6 @@ def json_extract_runes(url = "https://raw.communitydragon.org/latest/plugins/rcp
     mydict = dict(map(lambda i, j: (i,j), ids, names))
 
     return mydict
-
-
 
 
 
@@ -591,6 +584,8 @@ def json_extract_important_items(url = "https://raw.communitydragon.org/latest/p
 
     return mydict
 
+
+
 def purge_df(df : DataFrame) -> DataFrame:
     """
 
@@ -610,6 +605,8 @@ def purge_df(df : DataFrame) -> DataFrame:
     df = df[~df.isin(['']).any(axis=1)]
     df = df.dropna()
     return df
+
+
 
 def df_to_statdfs(df : DataFrame) -> tuple:
     
@@ -702,7 +699,7 @@ def df_to_statdfs(df : DataFrame) -> tuple:
     ).reset_index()
     keystone_runes_df['Score'] = keystone_runes_df['Winrate'] * keystone_runes_df['Games_Played']
     keystone_runes_df = purge_df(keystone_runes_df)
-    keystone_runes_df = keystone_runes_df.round(2)
+    keystone_runes_df = keystone_runes_df.round(4)
     keystone_runes_df = keystone_runes_df.sort_values(by='Winrate', ascending = False)
 
 
@@ -728,6 +725,7 @@ def df_to_statdfs(df : DataFrame) -> tuple:
     item_winrate_df = item_winrate_df.sort_values(by='Games_Played', ascending = False)
 
     return objective_df, winrate_by_role, effectiveness_df, tree_runes_df, keystone_runes_df, item_winrate_df
+
 
 
 def download_item_images(dir = './static/images/items') -> None:
@@ -758,9 +756,6 @@ def download_item_images(dir = './static/images/items') -> None:
             with open(save_path, 'wb') as file:
                 print(f'{name} downloaded')
                 file.write(resp.content)
-
-
-
 
 
 

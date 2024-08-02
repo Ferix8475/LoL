@@ -4,7 +4,9 @@ import Helper as req
 import os
 
 app = Flask(__name__)
-
+"""
+Global Variables
+"""
 matches_file = "matches.json"
 data_file = "data.pkl"
 results_file = "results.json"
@@ -259,9 +261,37 @@ def get_radar_graph_labels(raw_data: dict) -> dict:
 
     return graph_info
 
+"""
+Best Runepages Logic and Retrieval
+"""
 
+def get_runepage_recs(raw_data: dict) -> dict:
 
+    runepage_data = raw_data['keystone_runes_data']
+    # Find the runepages with the best winrate, best score (games played * winrate), and most games played
+    best_runepages = [max(runepage_data, key=lambda x: x['Winrate']), 
+                     max(runepage_data, key=lambda x: x['Score']), 
+                     max(runepage_data, key=lambda x: x['Games_Played'])]
+    
+    print(best_runepages)
+    
+    # Sort this into a dictionary to be passed to the frontend
+    runepage_info = {
+        'winrate_keystone': best_runepages[0]['Primary_Keystone'],
+        'winrate_secondary': best_runepages[0]['Secondary_Tree'],
+        'winrate_wr': best_runepages[0]['Winrate'],
+        'winrate_gp': best_runepages[0]['Games_Played'],
+        'score_keystone': best_runepages[1]['Primary_Keystone'],
+        'score_secondary': best_runepages[1]['Secondary_Tree'],
+        'score_wr': best_runepages[1]['Winrate'],
+        'score_gp': best_runepages[1]['Games_Played'],
+        'games_keystone': best_runepages[2]['Primary_Keystone'],
+        'games_secondary': best_runepages[2]['Secondary_Tree'],
+        'games_wr': best_runepages[2]['Winrate'],
+        'games_gp': best_runepages[2]['Games_Played'],
+    }
 
+    return runepage_info
 
 
 
@@ -278,9 +308,13 @@ def get_images_from_folder(folder_path: str):
     except Exception as e:
         return {'error': str(e)}
 
+
+
 @app.route('/images/<path:filename>')
 def serve_image(filename: str):
     return send_from_directory('static/images', filename)
+
+
 
 @app.route('/api/images')
 def get_images():
@@ -325,6 +359,8 @@ def home():
     """
     return render_template('index.html')
 
+
+
 @app.route('/champion')
 def champion_page():
     """
@@ -348,8 +384,13 @@ def champion_page():
     radar_labels = get_radar_graph_labels(raw_data=raw_info)
     item_table_info = raw_info['item_winrate_data']
 
+    runepage_info = get_runepage_recs(raw_data = raw_info)
+    
+
     return render_template('champion.html', champion=champion, role=role, info=raw_info, radar_graph_info = radar_labels, 
-                           external_role = external_role, item_table_info = item_table_info)
+                           external_role = external_role, item_table_info = item_table_info, runepage_info = runepage_info)
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
