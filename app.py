@@ -10,7 +10,7 @@ Global Variables
 matches_file = "matches.json"
 data_file = "data.pkl"
 results_file = "results.json"
-api_key = "RGAPI-ece977df-9a74-43a0-b83b-09d98b03dece"
+api_key = "RGAPI-565659ad-bcd4-4c91-8f9d-7b533a36a0e4"
 riot_id = "Ferix8475#NA1"
 
 gameName = riot_id.split("#")[0]
@@ -273,7 +273,6 @@ def get_runepage_recs(raw_data: dict) -> dict:
                      max(runepage_data, key=lambda x: x['Score']), 
                      max(runepage_data, key=lambda x: x['Games_Played'])]
     
-    print(best_runepages)
     
     # Sort this into a dictionary to be passed to the frontend
     runepage_info = {
@@ -338,8 +337,21 @@ def search():
     If the data doesn't exist, returns exists as false, which a script will handle and provide a pop-up error message
     """
     data = request.get_json()
-    #print(data)
-    info = get_champion_data(data['championName'], data['role'])
+
+    name_change = {
+        'Lee Sin': 'LeeSin',
+        'Jarvan IV': 'JarvanIV',
+        'Aurelion Sol': 'AurelionSol',
+        'Miss Fortune': 'MissFortune',
+        'Master Yi': 'MasterYi',
+        'Tahm Kench': 'TahmKench',
+        'Xin Zhao': 'XinZhao',
+        'Twisted Fate': 'TwistedFate',
+        'Dr Mundo': 'DrMundo'
+    }
+    champion_name = name_change[data['championName']] if data['championName'] in name_change else data['championName']
+
+    info = get_champion_data(champion_name, data['role'])
     exists = any(info.values())
 
     if exists and info['winrate_data']:
@@ -367,8 +379,28 @@ def champion_page():
     Routes to champion.html, inputing the champion, role, and the data associated with those two values
     """
 
+    
     champion = request.args.get('champion')
+    
     role = request.args.get('role')
+
+    external_champion = champion
+    name_change = {
+        'Lee Sin': 'LeeSin',
+        'Jarvan IV': 'JarvanIV',
+        'Aurelion Sol': 'AurelionSol',
+        'Miss Fortune': 'MissFortune',
+        'Master Yi': 'MasterYi',
+        'Tahm Kench': 'TahmKench',
+        'Xin Zhao': 'XinZhao',
+        'Twisted Fate': 'TwistedFate',
+        'Dr Mundo': 'DrMundo'
+    }
+
+    champion = name_change[external_champion] if external_champion in name_change else champion
+
+    
+    
 
     raw_info = get_champion_data(champion, role)
 
@@ -388,7 +420,8 @@ def champion_page():
     
 
     return render_template('champion.html', champion=champion, role=role, info=raw_info, radar_graph_info = radar_labels, 
-                           external_role = external_role, item_table_info = item_table_info, runepage_info = runepage_info)
+                           external_role = external_role, item_table_info = item_table_info, runepage_info = runepage_info
+                           , external_champion=external_champion)
 
 
 
