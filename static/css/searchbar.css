@@ -94,12 +94,14 @@
 .selected-option {
     display: flex;
     align-items: center;
-    cursor: pointer;
     position: relative;
     top: 15%;
+    cursor: pointer;
+
     left: 5%;
     
 }
+
 
 .option-icon {
     
@@ -120,7 +122,7 @@
 
 
 .options-container {
-    
+    display: none;
     position: relative;
     width: 100%;
     border: 1px solid #ccc;
@@ -177,7 +179,7 @@ button.search-button:hover {
 }
 
 .error-message:hover {
-    background-color: rgba(206, 204, 204, 0.9);
+    background-color: #f0f0f0;
     cursor: pointer;
 }
 

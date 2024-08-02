@@ -1,0 +1,56 @@
+, 
+        'resource_graph': {
+            'labels': [
+                {'text': 'Barons Killed', 'icon': 'static/images/general/objectives/nashor.png'},
+                {'text': 'Void Grubs Killed', 'icon': 'static/images/general/objectives/grub.png'},
+                {'text': 'Dragons Killed', 'icon': 'static/images/general/objectives/elder.png'},
+                {'text': 'Turrets Killed', 'icon': 'static/images/general/objectives/tower.png'},
+                {'text': 'Rift Heralds Killed', 'icon': 'static/images/general/objectives/rift_herald.png'}
+            ],
+            'datasets':[
+                {
+                    'label': 'Losses',
+                    'data': [effectiveness_data[0]['Barons_Killed'], 
+                             effectiveness_data[0]['Void_Grubs_Killed'], 
+                             effectiveness_data[0]['Dragons_Killed'], 
+                             effectiveness_data[0]['Turrets_Killed'],
+                             effectiveness_data[0]['Rift_Heralds_Killed']]
+                },
+            
+                { 
+                    'label': 'Wins',
+                    'data': [effectiveness_data[1]['Barons_Killed'], 
+                             effectiveness_data[1]['Void_Grubs_Killed'], 
+                             effectiveness_data[1]['Dragons_Killed'], 
+                             effectiveness_data[1]['Turrets_Killed'], 
+                             effectiveness_data[1]['Rift_Heralds_Killed']]
+                }
+            ]
+        }, 
+        'combat_graph': {
+            'labels': [
+                {'text': 'Barons Killed', 'icon': 'static/images/general/objectives/nashor.png'},
+                {'text': 'Void Grubs Killed', 'icon': 'static/images/general/objectives/grub.png'},
+                {'text': 'Dragons Killed', 'icon': 'static/images/general/objectives/elder.png'},
+                {'text': 'Turrets Killed', 'icon': 'static/images/general/objectives/tower.png'},
+                {'text': 'Rift Heralds Killed', 'icon': 'static/images/general/objectives/rift_herald.png'}
+            ],
+            'datasets':[
+                {
+                    'label': 'Losses',
+                    'data': [effectiveness_data[0]['Barons_Killed'], 
+                             effectiveness_data[0]['Void_Grubs_Killed'], 
+                             effectiveness_data[0]['Dragons_Killed'], 
+                             effectiveness_data[0]['Turrets_Killed'],
+                             effectiveness_data[0]['Rift_Heralds_Killed']]
+                },
+            
+                { 
+                    'label': 'Wins',
+                    'data': [effectiveness_data[1]['Barons_Killed'], 
+                             effectiveness_data[1]['Void_Grubs_Killed'], 
+                             effectiveness_data[1]['Dragons_Killed'], 
+                             effectiveness_data[1]['Turrets_Killed'], 
+                             effectiveness_data[1]['Rift_Heralds_Killed']]
+                }
+            ]

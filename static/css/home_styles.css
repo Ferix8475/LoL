@@ -1,9 +1,13 @@
 /* Just some padding... */
 
 .divider-one {
-    height: 40%;
+    height: 30%;
 }
 
 .divider-two {
     height: 3%;
+}
+
+.divider-three {
+    height: 5%
 }

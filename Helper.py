@@ -1,4 +1,5 @@
 import os
+import pathlib
 import re
 import requests
 import time
@@ -640,6 +641,7 @@ def df_to_statdfs(df : DataFrame) -> tuple:
 
     }).reset_index()
     objective_df = purge_df(objective_df)
+    objective_df = objective_df.round(2)
 
 
     # Calculate the Winrates and Games Played By Role
@@ -648,6 +650,7 @@ def df_to_statdfs(df : DataFrame) -> tuple:
         Games_Played=('Win', 'count')
     ).reset_index()
     winrate_by_role = purge_df(winrate_by_role)
+    winrate_by_role = winrate_by_role.round(2)
 
     # Calculate Effectiveness by Wins and Losses
     effectiveness_df = df.groupby(['Champion', 'Role', 'Win']).agg({
@@ -667,7 +670,7 @@ def df_to_statdfs(df : DataFrame) -> tuple:
 
     }).reset_index()
     effectiveness_df = purge_df(effectiveness_df)
-
+    effectiveness_df = effectiveness_df.round(2)
 
     # Fetch Runepage ID Matching Dictionaries and Map
     runes = json_extract_runes()
@@ -681,7 +684,7 @@ def df_to_statdfs(df : DataFrame) -> tuple:
 
     df['Primary_Tree'] = df['Primary_Tree'].replace(treepage)
     df['Secondary_Tree'] = df['Secondary_Tree'].replace(treepage)
-    df['Primary_Keyston'] = df['Primary_Keystone'].replace(runes)
+    df['Primary_Keystone'] = df['Primary_Keystone'].replace(runes)
 
     # Calculate Runepages by Tree Winrates
     tree_runes_df = df.groupby(['Champion', 'Role', 'Primary_Tree', 'Secondary_Tree']).agg(
@@ -689,13 +692,18 @@ def df_to_statdfs(df : DataFrame) -> tuple:
         Games_Played=('Win', 'count')
     ).reset_index()
     tree_runes_df = purge_df(tree_runes_df)
+    tree_runes_df = tree_runes_df.round(2)
+
 
     # Calculate Runepages by Keystone and Secondary Tree Winrates
     keystone_runes_df = df.groupby(['Champion', 'Role', 'Primary_Keystone', 'Secondary_Tree']).agg(
         Winrate=('Win', 'mean'),
         Games_Played=('Win', 'count')
     ).reset_index()
+    keystone_runes_df['Score'] = keystone_runes_df['Winrate'] * keystone_runes_df['Games_Played']
     keystone_runes_df = purge_df(keystone_runes_df)
+    keystone_runes_df = keystone_runes_df.round(2)
+    keystone_runes_df = keystone_runes_df.sort_values(by='Winrate', ascending = False)
 
 
     # Calculate Winrates by Item and Champion
@@ -716,11 +724,13 @@ def df_to_statdfs(df : DataFrame) -> tuple:
 
     item_winrate_df['Item'] = item_winrate_df['Item'].replace(mydict) # Replace IDs with Names
     item_winrate_df = purge_df(item_winrate_df)
+    item_winrate_df = item_winrate_df.round(4)
+    item_winrate_df = item_winrate_df.sort_values(by='Games_Played', ascending = False)
 
     return objective_df, winrate_by_role, effectiveness_df, tree_runes_df, keystone_runes_df, item_winrate_df
 
 
-def download_item_images(dir = './templates/images/items') -> None:
+def download_item_images(dir = './static/images/items') -> None:
     """
     Downloads images of items that are to be used in the website
 
@@ -749,34 +759,6 @@ def download_item_images(dir = './templates/images/items') -> None:
                 print(f'{name} downloaded')
                 file.write(resp.content)
 
-
-def download_item_images(dir = './templates/images/champions') -> None:
-    """
-    Downloads images of items that are to be used in the website
-
-    @Parameters:
-        url (str): The base url to images by id, found from data dragon
-
-    @Return:
-        None, downloads items into the dir folder
-    
-    
-    """
-    
-
-    item_dict = json_extract_important_items()
-
-    for id in item_dict:
-        name = item_dict[id]
-        if re.search(r'[<>:"/\\|?*\n\r]', name):
-            continue
-        items_url = f'http://ddragon.leagueoflegends.com/cdn/{latest_patch}/img/item/{id}.png'
-        save_path = dir + f'/{name}.png'
-        
-        resp = requests.get(items_url)
-        if resp.status_code == 200:
-            with open(save_path, 'wb') as file:
-                file.write(resp.content)
 
 
 
@@ -813,4 +795,5 @@ def download_champion_images(dir = './templates/images/champions') -> None:
         if resp.status_code == 200:
             with open(save_path, 'wb') as file:
                 file.write(resp.content)
+
 

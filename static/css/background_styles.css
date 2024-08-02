@@ -1,7 +1,9 @@
 /* Sitewide Style*/
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&display=swap');
+
 * {
     box-sizing: border-box;
-    font-family: 'Times New Roman', Times, serif;
+    font-family: 'Oswald', sans-serif;
 }
 
 body {

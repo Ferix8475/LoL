@@ -1,3 +1,6 @@
+/* 
+    Script to create the custom dropdown menu for the roles, retrieves the icons of the images along with the text per option 
+*/
 document.addEventListener("DOMContentLoaded", function() {
     const selectElement = document.getElementById("role-select");
     const selectedOptionElement = document.querySelector(".selected-option");

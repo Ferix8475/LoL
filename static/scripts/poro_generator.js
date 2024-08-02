@@ -1,3 +1,7 @@
+/*
+    Script to dyanmically load images from the static/images/general/poro/ folder (images of poros) and to randomly select an image fro this set 
+*/
+
 document.addEventListener("DOMContentLoaded", function() {
     const imageFolder = 'general/poro/'; 
     const endpoint = `/api/images?folder=${imageFolder}`;
