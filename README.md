@@ -1,6 +1,6 @@
 # League of Legends Statistics
 
-This project is a web application that provides statistics and data for League of Legends champions, including runepages, item statistics, and more.
+This project is a web application that provides personal statistics and data for League of Legends champions by role, including runepages, item statistics, and more.
 
 ## Table of Contents
 
@@ -15,12 +15,11 @@ This project is a web application that provides statistics and data for League o
 
 League of Legends Statistics is a Flask-based web application designed to provide detailed statistical data for League of Legends champions. The app includes features such as:
 
-- Best Winrate Runepages
-- Recommended Runepages
-- Most Games Played Runepages
-- Resource Management Data
-- Combat Statistics
-- Objective Control Data
+- Runepage Data (Best Winrate, Recommended Runepage, Runepage with Most Games Played)
+- Resource Management Data (Gold and CS)
+- Combat Statistics (Damage and KDA)
+- Objective Control Data (Dragons, Barons, Grubs etc.)
+- Item Winrate Data 
 
 ## Installation
 
@@ -31,7 +30,7 @@ To get a local copy up and running, follow these steps.
 - Python 3.8+
 - Flask
 - Pandas
-- [Other dependencies]
+
 
 ### Installation Steps
 
@@ -61,7 +60,10 @@ To get a local copy up and running, follow these steps.
     ```sh
     pip install -r requirements.txt
     ```
-6. Run the application
+
+6. Run the setup file 
+
+7. Run the application
     ```sh
     flask run
     ```
@@ -70,7 +72,11 @@ To get a local copy up and running, follow these steps.
 
 1. Open your web browser and navigate to `http://127.0.0.1:5000/`.
 2. Use the search functionality to find statistics for a specific champion.
-3. Browse through different sections like runepages, resource management data, and combat statistics.
+3. Browse through different sections like runepages, resource management data, combat statistics, item winrate statistics, and more.
+4. To update the dataframe, run the following command:
+    ```
+    python update.py
+    ```
 
 ## License
 
@@ -86,4 +92,5 @@ Project Link: [https://github.com/yourusername/league-of-legends-statistics](htt
 
 - [League of Legends API](https://developer.riotgames.com/)
 - [Flask Documentation](https://flask.palletsprojects.com/)
-- [Other libraries and resources used]
+- [Data Dragon](https://riot-api-libraries.readthedocs.io/en/latest/ddragon.html)
+- [Community Dragon](https://www.communitydragon.org/)
