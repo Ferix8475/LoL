@@ -40,32 +40,18 @@ To get a local copy up and running, follow these steps.
     ```sh
     cd LoL
     ```
-3. Create a virtual environment
-    ```sh
-    python -m venv venv
-    ```
-4. Activate the virtual environment
-
-    - On Windows:
-        ```sh
-        venv\Scripts\activate
-        ```
-    - On macOS/Linux:
-        ```sh
-        source venv/bin/activate
-        ```
-5. Install the dependencies
+3. Install the dependencies
     ```sh
     pip install -r requirements.txt
     ```
 
-6. Run the setup file, and enter your Riot API Key and Riot ID. See [here](https://developer.riotgames.com/docs/portal) to see how to get an API Key. Note that this might take a while due to API Rate Limits. Also note that Development API Keys only last 24hrs, so you will have to refresh it every time you run this command.
+4. Run the setup file, and enter your Riot API Key and Riot ID. See [here](https://developer.riotgames.com/docs/portal) to see how to get an API Key. Note that this might take a while due to API Rate Limits. Also note that Development API Keys only last 24hrs, so you will have to refresh it every time you run this command.
 
     ```sh
     python setup.py
     ```
 
-7. Run the application
+5. Run the application
     ```sh
     flask run
     ```
