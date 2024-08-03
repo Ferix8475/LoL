@@ -8,7 +8,6 @@ This project is a web application that provides personal statistics and data for
 - [Installation](#installation)
 - [Usage](#usage)
 - [Contributing](#contributing)
-- [Contact](#contact)
 - [Acknowledgments](#acknowledgments)
 
 ## Description
@@ -36,11 +35,11 @@ To get a local copy up and running, follow these steps.
 
 1. Clone the repository
     ```sh
-    git clone https://github.com/yourusername/league-of-legends-statistics.git
+    git clone https://github.com/Ferix8475/LoL.git
     ```
 2. Navigate to the project directory
     ```sh
-    cd league-of-legends-statistics
+    cd LoL
     ```
 3. Create a virtual environment
     ```sh
@@ -61,7 +60,11 @@ To get a local copy up and running, follow these steps.
     pip install -r requirements.txt
     ```
 
-6. Run the setup file 
+6. Run the setup file, and enter your Riot API Key and Riot ID. See [here](https://developer.riotgames.com/docs/portal) to see how to get an API Key. Note that this might take a while due to API Rate Limits. Also note that Development API Keys only last 24hrs, so you will have to refresh it every time you run this command.
+
+    ```sh
+    python setup.py
+    ```
 
 7. Run the application
     ```sh
@@ -71,22 +74,19 @@ To get a local copy up and running, follow these steps.
 ## Usage
 
 1. Open your web browser and navigate to `http://127.0.0.1:5000/`.
+
 2. Use the search functionality to find statistics for a specific champion.
 3. Browse through different sections like runepages, resource management data, combat statistics, item winrate statistics, and more.
-4. To update the dataframe, run the following command:
+4. To update the dataframe with the most recent matches you've played, run the following command, and enter your Riot API Key. See [here](https://developer.riotgames.com/docs/portal) to see how to get an API Key. Note that this might take a while due to API Rate Limits. Also note that Development API Keys only last 24hrs, so you will have to refresh it every time you run this command.
     ```
     python update.py
     ```
+5. To reset which Riot User's data you wish to look at, simply rerun [step 6 from the installation steps](#installation) with the new Riot ID.
 
 ## License
 
 Distributed under the MIT License. See `LICENSE` for more information.
 
-## Contact
-
-Felix Xie - [your.email@example.com](mailto:your.email@example.com)
-
-Project Link: [https://github.com/yourusername/league-of-legends-statistics](https://github.com/yourusername/league-of-legends-statistics)
 
 ## Acknowledgments
 
