@@ -7,7 +7,6 @@ This project is a web application that provides personal statistics and data for
 - [Description](#description)
 - [Installation](#installation)
 - [Usage](#usage)
-- [Contributing](#contributing)
 - [Acknowledgments](#acknowledgments)
 
 ## Description
