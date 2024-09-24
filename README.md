@@ -45,7 +45,7 @@ To get a local copy up and running, follow these steps.
     pip install -r requirements.txt
     ```
 
-4. Run the setup file, and enter your Riot API Key and Riot ID. See [here](https://developer.riotgames.com/docs/portal) to see how to get an API Key. Note that this might take a while due to API Rate Limits. Also note that Development API Keys only last 24hrs, so you will have to refresh it every time you run this command.
+4. Run the setup file, and enter your Riot API Key and Riot ID. See [here](https://developer.riotgames.com/docs/portal) to see how to get an API Key. Note that this might take a while due to API Rate Limits. Also note that Development API Keys only last 24hrs, so you may need to refresh your key every 24 hours. Otherwise, if you are using a permanent API Key, I recommend storing it locally as an environment variable or in a .env file for convenience. 
 
     ```sh
     python setup.py
@@ -62,7 +62,7 @@ To get a local copy up and running, follow these steps.
 
 2. Use the search functionality to find statistics for a specific champion.
 3. Browse through different sections like runepages, resource management data, combat statistics, item winrate statistics, and more.
-4. To update the dataframe with the most recent matches you've played, run the following command, and enter your Riot API Key. See [here](https://developer.riotgames.com/docs/portal) to see how to get an API Key. Note that this might take a while due to API Rate Limits. Also note that Development API Keys only last 24hrs, so you will have to refresh it every time you run this command.
+4. To update the dataframe with the most recent matches you've played, run the following command, and enter your Riot API Key. See [here](https://developer.riotgames.com/docs/portal) to see how to get an API Key. Note that this might take a while due to API Rate Limits. Also note that Development API Keys only last 24hrs, so you may need to refresh your key every 24 hours. Otherwise, if you are using a permanent API Key, I recommend storing it locally as an environment variable or in a .env file for convenience. 
     ```
     python update.py
     ```
