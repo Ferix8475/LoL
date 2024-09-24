@@ -1,0 +1,75 @@
+/*
+Runes Statistics Styles
+*/
+.runes{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: white;
+    width: 1600px;
+    margin: auto;
+    box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    padding: 10px;
+    margin-top: 50px;
+}
+
+.with-line {
+    border-bottom: 1px solid lightgrey;
+    padding-bottom: 5px;
+    margin-bottom: 5px;
+}
+
+.runes-container{
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.rune-set{
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.rune-icons{
+    display: flex;
+}
+
+.rune-subset{
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+.rune-subset-middle{
+    padding-right: 66px;
+}
+
+.rune-subset-side{
+    padding-right: 10px;
+}
+
+.games-played, .winrate{
+    margin-top: 70px;
+}
+
+.recommended-rune-image{
+    height: 200px;
+    width: auto;
+}
+.recommended-rune-image-secondary{
+    height: 50px;
+    width: auto;
+}
+
+.primary-image{
+    height: 90px;
+    width: auto;
+}
+
+
+span{
+    text-align: center;
+}

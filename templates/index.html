@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/background_styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/searchbar.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/carousel.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/home_styles.css') }}">
+    <script src="{{ url_for('static', filename='scripts/poro_generator.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='scripts/role_dropdown.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='scripts/item_carousel.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='scripts/champion_carousel.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='scripts/searchbar_submission.js') }}" defer></script>
+
+    <title>League Of Legends Statistics</title>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="brand-title">
+            <img class="league-icon" src="{{ url_for('static', filename='images/general/misc/lol_icon_v3.png') }}" alt="League of Legends Icon">
+
+            League of Legends Statistics
+        </div>
+        <div class="navbar-links">
+            <ul>
+                <li><a href="/">Home</a></li>
+                <img class="random-poro-image navbar-poro" src="" alt="Random Poro Image">
+            </ul>
+        </div>
+    </nav>
+
+
+    <div class = "search-engine">
+        <h1 class="searchbar-title"> Search for Statistics by Champion and Role</h1>
+        <div class="searchbar">
+
+    
+            <form class = "search-form" id="search-form">
+                <img class="random-poro-image searchbar-poro" src="" alt="Random Poro Image">
+    
+                <input class="champion-name" id="champion-name" type="text" placeholder="Enter Champion Name...." required>
+                <div class="role-dropdown-container">
+                    <div class="custom-select">
+                        <select id="role-select" required>
+                            <option value="TOP" data-icon="{{ url_for('static', filename='images/general/positions/top.png') }}">Top</option>
+                            <option value="JUNGLE" data-icon="{{ url_for('static', filename='images/general/positions/jungle.png') }}">Jungle</option>
+                            <option value="MIDDLE" data-icon="{{ url_for('static', filename='images/general/positions/middle.png') }}">Middle</option>
+                            <option value="BOTTOM" data-icon="{{ url_for('static', filename='images/general/positions/bottom.png') }}">Bottom</option>
+                            <option value="UTILITY" data-icon="{{ url_for('static', filename='images/general/positions/support.png') }}">Support</option>
+                        </select>
+                        <div class="selected-option">
+                            <img src="" alt="" class="option-icon">
+                            <span class="option-text"></span>
+                        </div>
+                        <div class="options-container"></div>
+                    </div>
+                </div>
+                <button class = "search-button" type="submit">Search</button>
+            </form>
+        </div>
+        <p class = 'error-message' id="error-message" style="color: red; display: none;"></p>
+
+    </div>
+    
+
+    <div class="divider-one"></div>
+
+
+    <div class="carousel champion-carousel">
+        <div class="solid-block-left-champion"></div>
+        <div class="solid-block-right-champion"></div>
+        <div class="carousel-wrapper-champion" id="champion-carousel-images"></div>
+    </div>
+
+
+    <div class="divider-two"></div>
+    
+
+    <div class="carousel item-carousel">
+        <div class="solid-block-left-item"></div>
+        <div class="solid-block-right-item"></div>
+        <div class="carousel-wrapper-item" id="item-carousel-images"></div>
+    </div>
+
+    
+    <div class="divider-three"></div>
+
+    
+</body>
+</html>

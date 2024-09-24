@@ -1,0 +1,190 @@
+
+/* General */
+
+.search-engine {
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    margin-top: 15%;
+    z-index: 3;
+    
+}
+.searchbar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #79bcfc;
+    box-shadow: 0 0 10px rgba(38, 8, 109, 0.1);
+    padding: 0.5rem;
+    height: 130px;
+    
+    width: 1250px;
+}
+
+
+.search-form {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #79bcfc;
+    box-shadow: 0 0 10px rgba(38, 8, 109, 0.1);
+    padding: 0.5rem;
+    height: 100%;
+    width: 80%;
+}
+
+/* Searchbar Random Poro */
+
+.searchbar-poro {
+    height: 110%;
+    padding-right: 1rem;
+}
+
+/* Search Prompt for Champion Name */
+
+.champion-name {
+    border:#4d4a4a;
+    padding: 0.5rem;
+    font-size: 1rem;
+    border-radius: 100px;
+    height: 50%;
+    width: 60%;
+    margin-right: 2rem;
+    background-color: rgb(241, 241, 241);
+    
+}
+
+/* Custom Dropdown Container for Roles, with Icons */
+
+.role-dropdown-container {
+    position: relative;
+    width: 20%;
+    background-color: rgb(241, 241, 241);
+    border-radius: 100px;
+    height: 35%;
+    justify-content: center;
+    margin-right: 5%;
+
+
+}
+
+.custom-select {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    
+    
+}
+
+#role-select {
+    display: none; 
+    
+}
+
+
+
+.selected-option {
+    display: flex;
+    align-items: center;
+    position: relative;
+    top: 15%;
+    cursor: pointer;
+
+    left: 5%;
+    
+}
+
+
+.option-icon {
+    
+    width: 1.5rem;
+    height: 1.5rem;
+    margin-right: 8px;
+}
+
+.selected-option::after {
+    content: '';
+    position: absolute;
+    right: 10%;
+    top: 60%;
+    transform: translateY(-50%);
+    border: 6px solid transparent;
+    border-top-color: #000;
+}
+
+
+.options-container {
+    display: none;
+    position: relative;
+    width: 100%;
+    border: 1px solid #ccc;
+    border-top: none;
+    background-color: white;
+    z-index: 1;
+    margin-top: 5px;
+}
+
+.options-container .option {
+    
+    display: flex;
+    align-items: center;
+    padding: 8px;
+    cursor: pointer;
+
+}
+
+.options-container .option:hover {
+    background-color: #f0f0f0;
+}
+
+
+.option-text{
+    align-items: center;
+    font-size: 1rem;
+}
+
+/* Search Button */
+
+.search-button {
+    border-radius: 100px;
+    border-width: 0;
+    height: 50%;
+    width: auto;
+}
+
+button.search-button:hover {
+    background-color: rgb(210, 210, 212);
+    cursor: pointer;
+}
+
+/* Error Text */
+.error-message {
+    position: absolute;
+    bottom: 50%;
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 0.2rem 0.5rem;
+    border-radius: 5px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    z-index: 20;
+    font-size: 1.5rem;
+
+}
+
+.error-message:hover {
+    background-color: #f0f0f0;
+    cursor: pointer;
+}
+
+/* Searchbar Title */
+.searchbar-title {
+    margin: 0;
+    padding-bottom: 5px;
+    top: 8rem;
+    color: black;
+    font-size: 300%;
+    width: 100vh;
+    text-align: center;
+}

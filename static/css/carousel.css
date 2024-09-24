@@ -1,0 +1,128 @@
+/* General Carousel Effects*/
+.carousel {
+    overflow: hidden;
+    white-space: nowrap;
+    position: relative;
+}
+
+@keyframes slideleft {
+    from {
+        transform: translateX(0);
+    }
+    to {
+        transform: translateX(-100%);
+    }
+}
+
+/* Item Carousel Images */
+
+
+.carousel-wrapper-item {
+    animation: slideleft 1000s linear infinite;
+    display: inline-block
+}
+
+.carousel-wrapper-item img {
+    height: 75px;
+}
+
+/* Item Carousel Fade effects*/
+
+.solid-block-left-item {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 10%; 
+    height: 100%;
+    background-color: #d0f3f3; 
+    z-index: 2;
+}
+
+.solid-block-right-item {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 10%; 
+    height: 100%;
+    background-color: #d0f3f3; 
+    z-index: 2;
+}
+
+.item-carousel:before{
+    position: absolute;
+    top: 0;
+    left: 10%;
+    width: 20%;
+    height: 100%;
+    background: linear-gradient(to left, rgba(255,255,255, 0), rgb(208, 243, 243));
+    content: "";
+    z-index: 2;
+}
+
+.item-carousel:after {
+    position: absolute;
+    top: 0;
+    right: 10%;
+    width: 10%;
+    height: 100%;
+    background: linear-gradient(to right, rgba(255,255,255, 0), rgb(208, 243, 243));
+    content: "";
+    z-index: 2;
+}
+
+/* Champion Carousel Images */
+
+
+.carousel-wrapper-champion {
+    animation: slideleft 500s linear infinite;
+    display: inline-block
+}
+
+.carousel-wrapper-champion img {
+    height: 20%;
+}
+
+
+/* Champion Carousel Fade effects*/
+
+.solid-block-left-champion {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 5%; 
+    height: 100%;
+    background-color: #d0f3f3; 
+    z-index: 2;
+}
+
+.solid-block-right-champion {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 5%; 
+    height: 100%;
+    background-color: #d0f3f3; 
+    z-index: 2;
+}
+
+.champion-carousel:before{
+    position: absolute;
+    top: 0;
+    left: 5%;
+    width: 20%;
+    height: 100%;
+    background: linear-gradient(to left, rgba(255,255,255, 0), rgb(208, 243, 243));
+    content: "";
+    z-index: 2;
+}
+
+.champion-carousel:after {
+    position: absolute;
+    top: 0;
+    right: 5%;
+    width: 10%;
+    height: 100%;
+    background: linear-gradient(to right, rgba(255,255,255, 0), rgb(208, 243, 243));
+    content: "";
+    z-index: 2;
+}

@@ -1,0 +1,23 @@
+/* Sitewide Style*/
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&display=swap');
+
+* {
+    box-sizing: border-box;
+    font-family: 'Oswald', sans-serif;
+}
+
+body {
+    background-color: rgb(208, 243, 243);
+    margin: 0;
+    padding: 0;
+    height: 100vh; 
+    display: flex;
+    flex-direction: column;
+
+}
+
+.information-section{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}

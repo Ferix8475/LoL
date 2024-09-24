@@ -1,0 +1,105 @@
+/*
+General Box for Display
+*/
+
+.statistics{
+    margin-top: 50px;
+    display: flex;
+}
+
+.middle-box{
+    width: 50px
+}
+
+/*
+Left Radar Graphs Styling
+*/
+
+.left-graphs{
+    border-radius: 10px;
+    width: 1000px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: white;
+    box-shadow: 10px 10px 10px  rgba(0,0,0,0.2);
+}
+
+
+
+.left-title{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.left-title-text{
+    margin: 0;
+}
+
+
+/*
+Item Table 
+*/
+.right-graphs{
+    height: auto;
+    width: 600px;
+    margin-left: 50px;
+    
+}
+
+table {
+    border-collapse: collapse;
+    background-color: white;
+    box-shadow: 10px 10px 10px  rgba(0,0,0,0.2);
+    border-radius: 10px;
+}
+
+table, th, td {
+    border: none;
+    padding: 8px;
+    text-align: left;
+}
+
+th, td{
+    border-right: 1px solid rgb(190, 190, 190);
+    border-bottom: 1px solid rgb(190, 190, 190);
+}
+
+th:last-child, td:last-child{
+    border-right: none;
+}
+
+tr:last-child td{
+    border-bottom: none;
+}
+
+th {
+    cursor: pointer;
+}
+
+th:first-child, td:first-child {
+    width: auto; 
+}
+
+th:not(:first-child), td:not(:first-child) {
+    width: 1%; 
+}
+
+.sort-button{
+    border-radius: 10px;
+}
+
+.item-table-icons{
+    height: 40px;
+    margin: 0;
+    padding: 0;
+    margin-right: 10px;
+}
+
+.item-cell{
+    display: flex;           
+    align-items: center;   
+}

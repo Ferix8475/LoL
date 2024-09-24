@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/background_styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/header.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/graphs.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/runepage.css') }}">
+
+    <script src="{{ url_for('static', filename='scripts/poro_generator.js') }}" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const radarGraphInfo = {{ radar_graph_info | tojson }};
+        const itemTableInfo = {{ item_table_info | tojson }};
+    </script>
+
+    <title>Champion Data</title>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="brand-title">
+            <img class="league-icon" src="{{ url_for('static', filename='images/general/misc/lol_icon_v3.png') }}" alt="League of Legends Icon">
+
+            League of Legends Statistics
+        </div>
+        <div class="navbar-links">
+            <ul>
+                <li><a href="/">Home</a></li>
+                <img class="random-poro-image navbar-poro" src="" alt="Random Poro Image">
+            </ul>
+        </div>
+    </nav>
+    
+
+    <div class="header">
+        <div class = "header-container">
+            <div class = "champion-images">
+                <img class="champion-icon" src="{{ url_for('static', filename='images/champions/' + champion + '.png') }}" alt="champion + 'icon'">
+                <img class="role-icon" src="{{ url_for('static', filename='images/general/positions/' + role + '.png') }}" alt="Role Icon">
+            </div>
+            <div class = "header-text">
+                <div class = "header-title">
+                    <h1 class = "header-title-big"> {{ external_champion }} {{ external_role }} Statistics</h1>
+                </div>
+
+                <p class = "header-title-info"> 
+                    {% for data in info.winrate_data %}
+                        Games Played: {{ data.Games_Played }} ||
+                        Winrate: {{ (data.Winrate * 100) | round(2) }}%
+                    {% endfor %}
+                </p>
+            </div>
+           
+        </div>
+        
+    </div>
+   
+    <div class="information-section">
+        <div class="runes">
+            <h2 class="with-line"> Runepage Data </h2>
+            <div class="runes-container">
+                
+                <div class="rune-set winrate">
+                    <h4 class="with-line"> Best Winrate Runepage</h4>
+                    <div class="rune-icons rune-subset-side">
+                        <div class="rune-subset">
+                            <span>{{ runepage_info.winrate_keystone }}</span>
+                            <img class="primary-image" src="{{ url_for ('static', filename='images/general/runes/' + runepage_info.winrate_keystone + '.png')}}" alt="">
+                        </div>
+                        <div class="rune-subset rune-subset-right">
+                            <span>{{ runepage_info.winrate_secondary }}</span>
+                            <img src="{{ url_for ('static', filename='images/general/runes/' + runepage_info.winrate_secondary+ '.png')}}" alt="">
+                        </div>
+
+
+                    </div>
+                    <span> Games Played: {{ runepage_info.winrate_gp }} || Winrate: {{ (runepage_info.winrate_wr * 100) | round(2)  }}% </span>
+
+                </div>
+                <div class="rune-set score">
+                    <h3 class="with-line">  Recommended Runepage</h3>
+                    <div class="rune-icons  rune-subset-middle">
+                        <div class="rune-subset">
+                            <span>{{ runepage_info.score_keystone }}</span>
+                            <img class="recommended-rune-image" src="{{ url_for ('static', filename='images/general/runes/' + runepage_info.score_keystone + '.png')}}" alt="">
+                        </div>
+                        <div class="rune-subset rune-subset-right">
+                            <span>{{ runepage_info.score_secondary }}</span>
+                            <img class="recommended-rune-image-secondary" src="{{ url_for ('static', filename='images/general/runes/' + runepage_info.score_secondary+ '.png')}}" alt="">
+                        </div>
+                    </div>
+                    <span> Games Played: {{ runepage_info.score_gp }} || Winrate: {{ (runepage_info.score_wr * 100) | round(2)  }}% </span>
+
+                </div>
+                <div class="rune-set games-played">
+                    <h4 class="with-line"> Most Games Played Runepage</h4>
+                    <div class="rune-icons  rune-subset-side">
+                        <div class="rune-subset">
+                            <span>{{ runepage_info.games_keystone }}</span>
+                            <img class="primary-image" src="{{ url_for ('static', filename='images/general/runes/' + runepage_info.games_keystone + '.png')}}" alt="">
+                        </div>
+                        <div class="rune-subset rune-subset-right">
+                            <span>{{ runepage_info.games_secondary }}</span>
+                            <img src="{{ url_for ('static', filename='images/general/runes/' + runepage_info.games_secondary+ '.png')}}" alt="">
+                        </div>
+
+
+                    </div>
+                    <span> Games Played: {{ runepage_info.games_gp }} || Winrate: {{ (runepage_info.games_wr * 100) | round(2) }}% </span>
+
+                </div>
+            </div>
+        </div>
+        <div class="statistics">
+            <div class = 'left-graphs'>
+
+                <div class = 'left-title with-line'>
+                    <h2 class = 'left-title-text'> Resource Management Data </h2>
+                    <img class="left-title-icon" src="{{ url_for('static', filename='images/general/misc/gold.png') }}" alt="Gold Icon">
+                </div>
+                <canvas id="resource-data" width="200" height="200"></canvas>
+
+                <div class = 'left-title with-line'>
+                    <h2 class = 'left-title-text '> Combat Statistics </h2>
+                    <img class="left-title-icon" src="{{ url_for('static', filename='images/general/misc/combat.png') }}" alt="Combat Icon">
+                </div>
+                <canvas id="combat-data" width="200" height="200"></canvas>
+
+                <div class = 'left-title with-line'>
+                    <h2 class = 'left-title-text'> Objective Control Data </h2>
+                    <img class="left-title-icon" src="{{ url_for('static', filename='images/general/objectives/tower.png') }}" alt="Tower Icon"> 
+                </div>
+                <canvas id="objective-data" width="200" height="200"></canvas>
+
+            </div>
+            <div class = 'right-graphs'>
+                
+                <table id="itemTableInfo">
+                    <thead>
+                        <tr>
+                            <th class="item-table-title">
+                                <span>Item Statistics (All Roles)</span>
+                                <div> 
+                                    <button class="sort-button" onclick="sortTable('winrate')">Sort by Winrate</button>
+                                    <button class="sort-button" onclick="sortTable('games')">Sort by Games Played</button>
+                                </div>
+                            </th>
+                            <th>Games Played</th>
+                            <th>Winrate</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="{{ url_for('static', filename='scripts/item_chart.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='scripts/radar_charts.js') }}" defer></script>
+</body>
+</html>
